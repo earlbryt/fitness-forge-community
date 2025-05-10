@@ -8,7 +8,7 @@ const AppLayout = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Sidebar />
-      <div className="lg:ml-64 p-4 md:p-6 pb-24 lg:pb-6">
+      <div className="lg:ml-64 p-5 md:p-7 pb-24 lg:pb-7 max-w-7xl">
         <Outlet />
       </div>
       <MobileNav />

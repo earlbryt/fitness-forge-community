@@ -63,12 +63,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom brand colors
+				// Updated brand colors to match the design in the reference images
 				brand: {
-					primary: '#4F46E5', // Indigo
-					secondary: '#EC4899', // Pink
-					accent: '#8B5CF6', // Purple
-					light: '#EEF2FF', // Light background
+					primary: '#8B5CF6', // Purple
+					secondary: '#FFBB33', // Yellow/Gold
+					accent: '#4F46E5', // Indigo
+					light: '#F5F3FF', // Light purple background
 					dark: '#1E293B', // Dark background
 					success: '#10B981', // Green
 					warning: '#F59E0B', // Amber

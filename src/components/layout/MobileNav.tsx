@@ -6,11 +6,11 @@ import { Activity, List, Award, BarChart2, MessageSquare } from 'lucide-react';
 const MobileNav = () => {
   return (
     <div className="mobile-only mobile-nav">
-      <MobileNavItem to="/" icon={<Activity size={24} />} label="Home" />
-      <MobileNavItem to="/workouts" icon={<List size={24} />} label="Workouts" />
-      <MobileNavItem to="/challenges" icon={<Award size={24} />} label="Challenges" />
-      <MobileNavItem to="/social" icon={<MessageSquare size={24} />} label="Social" />
-      <MobileNavItem to="/leaderboard" icon={<BarChart2 size={24} />} label="Leaderboard" />
+      <MobileNavItem to="/" icon={<Activity size={22} />} label="Home" />
+      <MobileNavItem to="/workouts" icon={<List size={22} />} label="Workouts" />
+      <MobileNavItem to="/challenges" icon={<Award size={22} />} label="Challenges" />
+      <MobileNavItem to="/social" icon={<MessageSquare size={22} />} label="Social" />
+      <MobileNavItem to="/leaderboard" icon={<BarChart2 size={22} />} label="Leaderboard" />
     </div>
   );
 };
@@ -30,7 +30,7 @@ const MobileNavItem = ({ to, icon, label }: MobileNavItemProps) => {
       }
     >
       {icon}
-      <span className="text-xs">{label}</span>
+      <span className="text-xs font-medium">{label}</span>
     </NavLink>
   );
 };

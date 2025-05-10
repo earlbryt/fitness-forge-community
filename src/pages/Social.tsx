@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ThumbsUp, MessageSquare } from 'lucide-react';
+import { Search, ThumbsUp, MessageSquare, Image, Smile } from 'lucide-react';
 
 const Social = () => {
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-2">Social</h1>
+      <h1 className="text-2xl font-bold mb-2">Social Community</h1>
       <p className="text-gray-500 mb-6">Connect with friends and share your fitness journey</p>
       
       <div className="flex mb-6">
@@ -18,51 +18,61 @@ const Social = () => {
           <input 
             type="text" 
             placeholder="Search posts..." 
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
+            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
           />
         </div>
-        <Button className="ml-2 bg-brand-primary hover:bg-brand-primary/90">
+        <Button className="ml-3 bg-brand-primary hover:bg-brand-primary/90 gap-2 rounded-xl">
           Create Post
         </Button>
       </div>
       
       <Tabs defaultValue="feed" className="mb-8">
-        <TabsList>
-          <TabsTrigger value="feed">Feed</TabsTrigger>
-          <TabsTrigger value="following">Following</TabsTrigger>
+        <TabsList className="bg-gray-100 p-1 rounded-lg">
+          <TabsTrigger value="feed" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-brand-primary data-[state=active]:shadow-sm">Feed</TabsTrigger>
+          <TabsTrigger value="following" className="rounded-md data-[state=active]:bg-white data-[state=active]:text-brand-primary data-[state=active]:shadow-sm">Following</TabsTrigger>
         </TabsList>
         
         <TabsContent value="feed" className="pt-6">
-          <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm mb-6">
-            <div className="flex items-start gap-3 mb-3">
+          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm mb-6">
+            <div className="flex items-start gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-brand-light text-brand-primary flex items-center justify-center font-semibold">
                 YA
               </div>
               <Textarea 
                 placeholder="Share your workout or fitness journey..." 
-                className="flex-1"
+                className="flex-1 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20"
               />
             </div>
-            <div className="flex justify-between items-center">
-              <Select defaultValue="">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Workout type (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="running">Running</SelectItem>
-                    <SelectItem value="strength">Strength Training</SelectItem>
-                    <SelectItem value="yoga">Yoga</SelectItem>
-                    <SelectItem value="cycling">Cycling</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <Button variant="secondary">Post</Button>
+            <div className="flex justify-between items-center px-1">
+              <div className="flex gap-2">
+                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-brand-primary rounded-lg">
+                  <Image size={18} />
+                </Button>
+                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-brand-primary rounded-lg">
+                  <Smile size={18} />
+                </Button>
+              </div>
+              <div className="flex items-center gap-3">
+                <Select defaultValue="">
+                  <SelectTrigger className="w-[180px] h-9 rounded-lg border-gray-200">
+                    <SelectValue placeholder="Workout type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="running">Running</SelectItem>
+                      <SelectItem value="strength">Strength Training</SelectItem>
+                      <SelectItem value="yoga">Yoga</SelectItem>
+                      <SelectItem value="cycling">Cycling</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Button className="rounded-lg">Post</Button>
+              </div>
             </div>
           </div>
           
-          <div className="space-y-6">
+          <div className="space-y-5">
             <SocialPost 
               user="Sarah Johnson"
               username="sarahj"
@@ -101,7 +111,7 @@ const Social = () => {
         </TabsContent>
         
         <TabsContent value="following" className="pt-6">
-          <div className="space-y-6">
+          <div className="space-y-5">
             <SocialPost 
               user="David Kim"
               username="davekim"
@@ -147,8 +157,8 @@ const SocialPost = ({
   user, username, time, content, likes, comments, workout, initials, verified = false
 }: SocialPostProps) => {
   return (
-    <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-      <div className="flex justify-between items-start mb-3">
+    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-brand-light text-brand-primary flex items-center justify-center font-semibold">
             {initials}
@@ -161,14 +171,14 @@ const SocialPost = ({
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               )}
-              <span className="text-brand-primary text-xs">@{username}</span>
+              <span className="text-brand-primary text-xs font-medium">@{username}</span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-gray-500">
+            <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
               <span>{time}</span>
               {workout && (
                 <>
                   <span>•</span>
-                  <span className="bg-brand-light text-brand-primary px-1.5 py-0.5 rounded">
+                  <span className="bg-brand-light text-brand-primary px-2 py-0.5 rounded-full text-xs font-medium">
                     {workout}
                   </span>
                 </>
@@ -178,16 +188,16 @@ const SocialPost = ({
         </div>
       </div>
       
-      <p className="text-gray-700 mb-4">{content}</p>
+      <p className="text-gray-700 mb-5">{content}</p>
       
-      <div className="flex gap-4">
-        <button className="flex items-center gap-1 text-gray-500 hover:text-brand-primary">
+      <div className="flex gap-6">
+        <button className="flex items-center gap-1.5 text-gray-500 hover:text-brand-primary">
           <ThumbsUp size={18} />
-          <span>{likes}</span>
+          <span className="text-sm font-medium">{likes}</span>
         </button>
-        <button className="flex items-center gap-1 text-gray-500 hover:text-brand-primary">
+        <button className="flex items-center gap-1.5 text-gray-500 hover:text-brand-primary">
           <MessageSquare size={18} />
-          <span>{comments}</span>
+          <span className="text-sm font-medium">{comments}</span>
         </button>
       </div>
     </div>
