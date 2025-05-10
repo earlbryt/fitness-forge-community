@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, Award, Users, ArrowRight, Dumbbell, Heart } from 'lucide-react';
+import { Activity, Award, Users, ArrowRight, Dumbbell, Heart, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -19,16 +19,16 @@ const LandingPage = () => {
         </div>
         <nav className="hidden md:flex items-center space-x-8">
           <Link to="/" className="hover:text-brand-primary transition-colors">Home</Link>
-          <Link to="/workouts" className="hover:text-brand-primary transition-colors">Workouts</Link>
-          <Link to="/challenges" className="hover:text-brand-primary transition-colors">Challenges</Link>
-          <Link to="/leaderboard" className="hover:text-brand-primary transition-colors">Community</Link>
+          <Link to="/app/workouts" className="hover:text-brand-primary transition-colors">Workouts</Link>
+          <Link to="/app/challenges" className="hover:text-brand-primary transition-colors">Challenges</Link>
+          <Link to="/app/leaderboard" className="hover:text-brand-primary transition-colors">Community</Link>
         </nav>
         <div className="flex items-center space-x-4">
           <Button asChild variant="outline" className="hidden md:inline-flex border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white">
             <Link to="/login">Log In</Link>
           </Button>
-          <Button asChild className="bg-brand-secondary hover:bg-brand-secondary/90 text-black">
-            <Link to="/">Get Started</Link>
+          <Button asChild className="bg-brand-primary hover:bg-brand-primary/90 text-white">
+            <Link to="/app">Get Started</Link>
           </Button>
         </div>
       </header>
@@ -38,27 +38,26 @@ const LandingPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="flex flex-col space-y-6">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-brand-primary/20 text-brand-primary text-sm font-medium">
-              <Award className="mr-2" size={18} /> Join over 10,000 fitness enthusiasts
+              <Users className="mr-2" size={18} /> Join our fitness community today
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              TRANSFORM YOUR <span className="text-brand-primary">BODY</span>, ELEVATE YOUR <span className="text-brand-secondary">LIFE</span>
+              TRANSFORM YOUR <span className="text-brand-primary">FITNESS</span>, BUILD YOUR <span className="text-brand-secondary">COMMUNITY</span>
             </h1>
             <p className="text-lg text-gray-300">
-              Connect with a community of fitness enthusiasts, log your activities, participate in challenges, and climb the leaderboard.
+              Connect with fellow fitness enthusiasts, track your workouts, participate in challenges, and climb the leaderboard. Stay motivated with verified workouts and friendly competition.
             </p>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
-              <Button asChild size="lg" className="bg-brand-secondary hover:bg-brand-secondary/90 text-black font-bold">
-                <Link to="/">Get Started Now <ArrowRight className="ml-2" /></Link>
+              <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold">
+                <Link to="/app">Join Our Community <ArrowRight className="ml-2" /></Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-white hover:bg-white/10">
-                <Link to="/workouts">Explore Workouts</Link>
+                <Link to="/app/workouts">Explore Workouts</Link>
               </Button>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8">
-              <Stat number="5K+" label="Active Users" />
-              <Stat number="200+" label="Workouts" />
-              <Stat number="50+" label="Challenges" />
-              <Stat number="24/7" label="Community" />
+            <div className="grid grid-cols-3 gap-4 pt-8">
+              <Stat number="80%" label="Consistency Rate" />
+              <Stat number="3x" label="Workout Motivation" />
+              <Stat number="95%" label="Community Support" />
             </div>
           </div>
           <div className="flex justify-center lg:justify-end">
@@ -69,9 +68,6 @@ const LandingPage = () => {
                 alt="Fitness Character" 
                 className="relative z-10 max-h-[500px] object-contain"
               />
-              <div className="absolute top-0 right-0 z-20 bg-black/70 backdrop-blur-sm rounded-full py-2 px-4 flex items-center">
-                <Heart className="text-red-500 mr-2" /> 95% Success Rate
-              </div>
             </div>
           </div>
         </div>
@@ -82,30 +78,30 @@ const LandingPage = () => {
         <div className="container mx-auto px-4 md:px-0">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose <span className="text-brand-secondary">FitCommunity</span></h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">Join our platform to transform your fitness journey with community support and personalized challenges.</p>
+            <p className="text-gray-300 max-w-2xl mx-auto">Join our platform to transform your fitness journey with community support and verified workouts.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 
-              icon={<Dumbbell className="text-brand-secondary" size={32} />}
-              title="Personalized Workouts"
-              description="Access hundreds of personalized workout plans tailored to your fitness level and goals."
+              icon={<CheckCircle className="text-brand-secondary" size={32} />}
+              title="Verified Workouts"
+              description="Log your workouts and verify them with photos or videos. No more doubts about each other's progress."
             />
             <FeatureCard 
               icon={<Award className="text-brand-secondary" size={32} />}
               title="Exciting Challenges"
-              description="Join weekly and monthly challenges to stay motivated and earn rewards."
+              description="Create and join one-on-one or group challenges to stay motivated and compete with friends."
             />
             <FeatureCard 
               icon={<Users className="text-brand-secondary" size={32} />}
               title="Supportive Community"
-              description="Connect with like-minded fitness enthusiasts who will support your journey."
+              description="Connect with like-minded fitness enthusiasts who will support your journey and keep you accountable."
             />
           </div>
           
           <div className="mt-12 text-center">
             <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90">
-              <Link to="/">Join Our Community Today <ArrowRight className="ml-2" /></Link>
+              <Link to="/app">Join Our Community Today <ArrowRight className="ml-2" /></Link>
             </Button>
           </div>
         </div>
@@ -118,8 +114,8 @@ const LandingPage = () => {
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Start Your Fitness Journey Today</h2>
               <p className="text-gray-300 mb-6">Join thousands of users already transforming their lives through our supportive community platform.</p>
-              <Button asChild size="lg" className="bg-brand-secondary hover:bg-brand-secondary/90 text-black font-bold">
-                <Link to="/">Get Started For Free <ArrowRight className="ml-2" /></Link>
+              <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold">
+                <Link to="/app">Get Started For Free <ArrowRight className="ml-2" /></Link>
               </Button>
             </div>
             <div className="flex justify-center lg:justify-end space-x-8">
@@ -167,17 +163,17 @@ const LandingPage = () => {
               <h3 className="text-lg font-bold mb-4">Quick Links</h3>
               <div className="flex flex-col space-y-2">
                 <Link to="/" className="text-gray-400 hover:text-brand-primary transition-colors">Home</Link>
-                <Link to="/workouts" className="text-gray-400 hover:text-brand-primary transition-colors">Workouts</Link>
-                <Link to="/challenges" className="text-gray-400 hover:text-brand-primary transition-colors">Challenges</Link>
-                <Link to="/leaderboard" className="text-gray-400 hover:text-brand-primary transition-colors">Leaderboard</Link>
+                <Link to="/app/workouts" className="text-gray-400 hover:text-brand-primary transition-colors">Workouts</Link>
+                <Link to="/app/challenges" className="text-gray-400 hover:text-brand-primary transition-colors">Challenges</Link>
+                <Link to="/app/leaderboard" className="text-gray-400 hover:text-brand-primary transition-colors">Leaderboard</Link>
               </div>
             </div>
             
             <div>
               <h3 className="text-lg font-bold mb-4">Community</h3>
               <div className="flex flex-col space-y-2">
-                <Link to="/social" className="text-gray-400 hover:text-brand-primary transition-colors">Social Feed</Link>
-                <Link to="/tips" className="text-gray-400 hover:text-brand-primary transition-colors">Tips & Tricks</Link>
+                <Link to="/app/social" className="text-gray-400 hover:text-brand-primary transition-colors">Social Feed</Link>
+                <Link to="/app/tips" className="text-gray-400 hover:text-brand-primary transition-colors">Tips & Tricks</Link>
                 <a href="#" className="text-gray-400 hover:text-brand-primary transition-colors">FAQ</a>
                 <a href="#" className="text-gray-400 hover:text-brand-primary transition-colors">Support</a>
               </div>
@@ -192,7 +188,7 @@ const LandingPage = () => {
                   placeholder="Your email" 
                   className="bg-gray-800 text-white px-4 py-2 rounded-l-lg focus:outline-none flex-grow"
                 />
-                <Button className="rounded-l-none bg-brand-secondary hover:bg-brand-secondary/90 text-black">
+                <Button className="rounded-l-none bg-brand-primary hover:bg-brand-primary/90 text-white">
                   Subscribe
                 </Button>
               </div>

@@ -63,13 +63,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Updated brand colors to match the design in the reference images
+				// Updated brand colors based on the reference image
 				brand: {
-					primary: '#8B5CF6', // Purple
-					secondary: '#FFBB33', // Yellow/Gold
+					primary: '#9b87f5', // Purple from the reference
+					secondary: '#7E69AB', // Secondary purple
 					accent: '#4F46E5', // Indigo
 					light: '#F5F3FF', // Light purple background
-					dark: '#1E293B', // Dark background
+					dark: '#1A1F2C', // Dark background
 					success: '#10B981', // Green
 					warning: '#F59E0B', // Amber
 					danger: '#EF4444', // Red

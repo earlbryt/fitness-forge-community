@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Activity, List, Award, BarChart2, MessageSquare, HelpCircle } from 'lucide-react';
+import { Activity, List, Award, BarChart2, MessageSquare, HelpCircle, CheckCircle } from 'lucide-react';
 
 const Sidebar = () => {
   return (
@@ -13,18 +13,18 @@ const Sidebar = () => {
       </div>
       <nav className="flex-1 pt-6 px-3">
         <SidebarLink to="/app" icon={<Activity />} label="Dashboard" />
-        <SidebarLink to="/app/workouts" icon={<List />} label="Workouts" />
+        <SidebarLink to="/app/workouts" icon={<CheckCircle />} label="Log Workout" />
         <SidebarLink to="/app/challenges" icon={<Award />} label="Challenges" />
         <SidebarLink to="/app/leaderboard" icon={<BarChart2 />} label="Leaderboard" />
         <SidebarLink to="/app/tips" icon={<HelpCircle />} label="Tips & Tricks" />
-        <SidebarLink to="/app/social" icon={<MessageSquare />} label="Social" />
+        <SidebarLink to="/app/social" icon={<MessageSquare />} label="Community" />
       </nav>
       
       <div className="p-4 m-4 mt-auto rounded-xl bg-brand-light border border-brand-primary/10">
-        <div className="text-sm font-medium text-brand-primary mb-2">Premium Plan</div>
-        <p className="text-xs text-gray-600 mb-3">Get access to all premium features and workouts</p>
+        <div className="text-sm font-medium text-brand-primary mb-2">Stay Motivated</div>
+        <p className="text-xs text-gray-600 mb-3">Track your progress and compete in challenges with friends</p>
         <button className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white text-sm py-2 rounded-lg transition-colors">
-          Upgrade Now
+          Invite Friends
         </button>
       </div>
     </div>
