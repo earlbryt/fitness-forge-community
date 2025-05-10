@@ -14,6 +14,10 @@ import Reminders from "./pages/Reminders";
 import NotFound from "./pages/NotFound";
 import LandingPage from "./pages/LandingPage";
 import SupabaseTest from "./pages/SupabaseTest";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import { AuthProvider } from "./lib/auth";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -23,20 +27,31 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/app" element={<AppLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="workouts" element={<Workouts />} />
-            <Route path="challenges" element={<Challenges />} />
-            <Route path="leaderboard" element={<Leaderboard />} />
-            <Route path="tips" element={<TipsAndTricks />} />
-            <Route path="social" element={<Social />} />
-            <Route path="reminders" element={<Reminders />} />
-            <Route path="supabase" element={<SupabaseTest />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/app" element={<AppLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="workouts" element={<Workouts />} />
+                <Route path="challenges" element={<Challenges />} />
+                <Route path="leaderboard" element={<Leaderboard />} />
+                <Route path="tips" element={<TipsAndTricks />} />
+                <Route path="social" element={<Social />} />
+                <Route path="reminders" element={<Reminders />} />
+                <Route path="supabase" element={<SupabaseTest />} />
+              </Route>
+            </Route>
+            
+            {/* 404 route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

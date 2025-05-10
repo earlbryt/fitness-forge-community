@@ -1,8 +1,17 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Activity, List, Award, BarChart2, MessageSquare, HelpCircle, CheckCircle, Database } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Activity, List, Award, BarChart2, MessageSquare, CheckCircle, LogOut, User } from 'lucide-react';
+import { useAuth } from '@/lib/auth';
+import { Button } from '@/components/ui/button';
 
 const Sidebar = () => {
+  const { user, signOut } = useAuth();
+  const location = useLocation();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <div className="desktop-only bg-white border-r border-gray-100 w-64 flex flex-col h-screen fixed shadow-sm">
       <div className="p-6 border-b border-gray-100">
@@ -15,17 +24,27 @@ const Sidebar = () => {
         <SidebarLink to="/app/workouts" icon={<CheckCircle />} label="Log Workout" />
         <SidebarLink to="/app/challenges" icon={<Award />} label="Challenges" />
         <SidebarLink to="/app/leaderboard" icon={<BarChart2 />} label="Leaderboard" />
-        <SidebarLink to="/app/tips" icon={<HelpCircle />} label="Tips & Tricks" />
         <SidebarLink to="/app/social" icon={<MessageSquare />} label="Community" />
-        <SidebarLink to="/app/supabase" icon={<Database />} label="Supabase" />
       </nav>
       
-      <div className="p-4 m-4 mt-auto rounded-xl bg-brand-light border border-brand-primary/10">
-        <div className="text-sm font-medium text-brand-primary mb-2">Stay Motivated</div>
-        <p className="text-xs text-gray-600 mb-3">Track your progress and compete in challenges with friends</p>
-        <button className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white text-sm py-2 rounded-lg transition-colors">
-          Invite Friends
-        </button>
+      {/* User info */}
+      <div className="p-4 border-t border-gray-100 mt-auto">
+        <div className="flex items-center mb-4">
+          <div className="h-10 w-10 rounded-full bg-brand-primary/20 flex items-center justify-center mr-3">
+            <User size={20} className="text-brand-primary" />
+          </div>
+          <div>
+            <div className="font-medium text-sm">{user?.email}</div>
+            <div className="text-xs text-gray-500">Logged in</div>
+          </div>
+        </div>
+        <Button 
+          variant="outline" 
+          className="w-full justify-start text-gray-600 border-gray-200"
+          onClick={handleSignOut}
+        >
+          <LogOut size={16} className="mr-2" /> Sign Out
+        </Button>
       </div>
     </div>
   );
@@ -38,10 +57,15 @@ interface SidebarLinkProps {
 }
 
 const SidebarLink = ({ to, icon, label }: SidebarLinkProps) => {
+  const location = useLocation();
+  const isActive = 
+    (to === '/app' && location.pathname === '/app') || 
+    (to !== '/app' && location.pathname.startsWith(to));
+    
   return (
     <NavLink 
       to={to} 
-      className={({ isActive }) => 
+      className={
         `flex items-center px-4 py-3 mb-2 rounded-xl transition-colors ${
           isActive 
             ? 'bg-brand-primary text-white font-medium' 

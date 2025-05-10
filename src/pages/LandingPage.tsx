@@ -1,14 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, Award, Users, ArrowRight, Dumbbell, Heart, CheckCircle, Bell, MessageSquare, BarChart2 } from 'lucide-react';
+import { Activity, Award, Users, ArrowRight, Dumbbell, Heart, CheckCircle, Bell, MessageSquare, BarChart2, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useAuth } from '@/lib/auth';
 
 const LandingPage = () => {
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-white to-gray-100 text-gray-900">
       {/* Navigation */}
-      <header className="container mx-auto py-6 px-4 md:px-0 flex justify-between items-center">
+      <header className="container mx-auto py-6 px-4 md:px-6 lg:px-12 xl:px-24 flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <Activity size={28} className="text-brand-secondary" />
           <h1 className="text-2xl font-bold">
@@ -23,17 +30,38 @@ const LandingPage = () => {
           <Link to="/app/leaderboard" className="text-gray-800 hover:text-brand-primary transition-colors">Community</Link>
         </nav>
         <div className="flex items-center space-x-4">
-          <Button asChild variant="outline" className="hidden md:inline-flex border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white">
-            <Link to="/login">Log In</Link>
-          </Button>
-          <Button asChild className="bg-brand-primary hover:bg-brand-primary/90 text-white">
-            <Link to="/app">Get Started</Link>
-          </Button>
+          {user ? (
+            <>
+              <div className="hidden md:block text-sm text-gray-600">
+                {user.email}
+              </div>
+              <Button asChild className="bg-brand-primary hover:bg-brand-primary/90 text-white">
+                <Link to="/app">Dashboard</Link>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="hidden md:flex border-gray-300"
+                onClick={handleSignOut}
+              >
+                <LogOut size={18} />
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="outline" className="hidden md:inline-flex border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white">
+                <Link to="/login">Log In</Link>
+              </Button>
+              <Button asChild className="bg-brand-primary hover:bg-brand-primary/90 text-white">
+                <Link to="/signup">Sign Up</Link>
+              </Button>
+            </>
+          )}
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto py-16 md:py-24 px-4 md:px-0">
+      <section className="container mx-auto py-16 md:py-24 px-4 md:px-6 lg:px-12 xl:px-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="flex flex-col space-y-6">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-brand-primary/20 text-brand-primary text-sm font-medium">
@@ -46,12 +74,20 @@ const LandingPage = () => {
               Connect with your weekly workout group, verify your progress, and stay accountable between meetups. Track workouts, join challenges, and climb the leaderboard together.
             </p>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
-              <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold">
-                <Link to="/app">Join Your Workout Group <ArrowRight className="ml-2" /></Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-brand-primary text-brand-primary hover:bg-brand-primary/10">
-                <Link to="/app/workouts">Log a Workout</Link>
-              </Button>
+              {user ? (
+                <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold">
+                  <Link to="/app">Go to Dashboard <ArrowRight className="ml-2" /></Link>
+                </Button>
+              ) : (
+                <>
+                  <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold">
+                    <Link to="/signup">Join Your Workout Group <ArrowRight className="ml-2" /></Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline" className="border-brand-primary text-brand-primary hover:bg-brand-primary/10">
+                    <Link to="/login">Log In</Link>
+                  </Button>
+                </>
+              )}
             </div>
             <div className="grid grid-cols-3 gap-4 pt-8">
               <Stat number="80%" label="Higher Consistency" />
@@ -74,7 +110,7 @@ const LandingPage = () => {
       
       {/* Features Section */}
       <section className="bg-white py-16 md:py-24 shadow-sm">
-        <div className="container mx-auto px-4 md:px-0">
+        <div className="container mx-auto px-4 md:px-6 lg:px-12 xl:px-24">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose <span className="text-brand-secondary">FitCommunity</span></h2>
             <p className="text-gray-600 max-w-2xl mx-auto">Keep the momentum going between your weekly group workouts with our community-driven platform.</p>
@@ -114,15 +150,21 @@ const LandingPage = () => {
           </div>
           
           <div className="mt-12 text-center">
-            <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90">
-              <Link to="/app">Join Your Workout Group Today <ArrowRight className="ml-2" /></Link>
-            </Button>
+            {user ? (
+              <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90">
+                <Link to="/app">Go to Dashboard <ArrowRight className="ml-2" /></Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90">
+                <Link to="/signup">Join Your Workout Group Today <ArrowRight className="ml-2" /></Link>
+              </Button>
+            )}
           </div>
         </div>
       </section>
       
       {/* Testimonial Section with Standing Image */}
-      <section className="container mx-auto py-16 md:py-24 px-4 md:px-0">
+      <section className="container mx-auto py-16 md:py-24 px-4 md:px-6 lg:px-12 xl:px-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center lg:justify-start order-2 lg:order-1">
             <div className="relative">
@@ -159,15 +201,21 @@ const LandingPage = () => {
       </section>
       
       {/* Call to Action */}
-      <section className="container mx-auto py-16 md:py-24 px-4 md:px-0">
+      <section className="container mx-auto py-16 md:py-24 px-4 md:px-6 lg:px-12 xl:px-24">
         <div className="bg-gradient-to-r from-brand-primary/10 to-brand-secondary/10 rounded-3xl p-8 md:p-12 shadow-lg">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Keep Your Group Motivated All Week</h2>
               <p className="text-gray-600 mb-6">Join your workout buddies on our platform to maintain the energy between weekly meetups and achieve your fitness goals together.</p>
-              <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold">
-                <Link to="/app">Get Started For Free <ArrowRight className="ml-2" /></Link>
-              </Button>
+              {user ? (
+                <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold">
+                  <Link to="/app">Go to Dashboard <ArrowRight className="ml-2" /></Link>
+                </Button>
+              ) : (
+                <Button asChild size="lg" className="bg-brand-primary hover:bg-brand-primary/90 text-white font-bold">
+                  <Link to="/signup">Get Started For Free <ArrowRight className="ml-2" /></Link>
+                </Button>
+              )}
             </div>
             <div className="flex justify-center lg:justify-end space-x-8">
               <div className="flex flex-col items-center">
@@ -195,7 +243,7 @@ const LandingPage = () => {
       
       {/* Footer */}
       <footer className="bg-gray-100 py-12 border-t border-gray-200">
-        <div className="container mx-auto px-4 md:px-0">
+        <div className="container mx-auto px-4 md:px-6 lg:px-12 xl:px-24">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">

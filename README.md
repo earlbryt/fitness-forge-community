@@ -1,73 +1,114 @@
-# Welcome to your Lovable project
+# FitCommunity
 
-## Project info
+FitCommunity is a platform designed for fitness enthusiasts to track workouts, participate in challenges, and stay motivated between weekly meetups. It helps workout groups maintain accountability and motivation throughout the week by providing tools for workout verification, challenges, and community engagement.
 
-**URL**: https://lovable.dev/projects/738c85cb-03af-43f1-a384-960d7446d26c
+## Features
 
-## How can I edit this code?
+- **Verified Workouts**: Log workouts with photo/video verification so your group knows you're staying consistent.
+- **Group Challenges**: Create one-on-one or group challenges with your workout buddies to maintain motivation.
+- **Workout Reminders**: Set custom reminders to keep your workout schedule on track between group sessions.
+- **Tips & Tricks**: Exchange fitness advice, nutrition tips, and motivation with your community.
+- **Leaderboards**: Climb challenge-specific and global leaderboards to fuel friendly competition.
+- **Community Support**: Build accountability and support through a close-knit community of friends.
 
-There are several ways of editing your application.
+## Technology Stack
 
-**Use Lovable**
+- **Frontend**: React with TypeScript
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **Routing**: React Router v6
+- **State Management**: React Context API
+- **Authentication & Backend**: Supabase
+- **Build Tool**: Vite
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/738c85cb-03af-43f1-a384-960d7446d26c) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js (v16 or higher)
+- npm or yarn
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+1. Clone the repository
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+git clone https://github.com/yourusername/fitness-forge-community.git
+cd fitness-forge-community
 ```
 
-**Edit a file directly in GitHub**
+2. Install dependencies
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm install
+# or
+yarn install
+```
 
-**Use GitHub Codespaces**
+3. Set up environment variables
+   Create a `.env` file in the root directory and add your Supabase credentials:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-## What technologies are used for this project?
+4. Start the development server
 
-This project is built with:
+```sh
+npm run dev
+# or
+yarn dev
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Application Structure
 
-## How can I deploy this project?
+- `/src/components`: Reusable UI components
+- `/src/pages`: Page components for different routes
+- `/src/lib`: Utility functions, API clients, and context providers
+- `/src/hooks`: Custom React hooks
 
-Simply open [Lovable](https://lovable.dev/projects/738c85cb-03af-43f1-a384-960d7446d26c) and click on Share -> Publish.
+## Key Components
 
-## Can I connect a custom domain to my Lovable project?
+### Authentication
 
-Yes, you can!
+The application uses Supabase Authentication with email/password login. Authentication state is managed through the AuthContext provider.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Protected Routes
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Routes under the `/app` path are protected and require authentication.
+
+### Main Sections
+
+- **Dashboard**: Overview of activity, challenges, and progress
+- **Workouts**: Log and verify workout activities
+- **Challenges**: Join or create fitness challenges
+- **Leaderboard**: Track user rankings and progress
+- **Tips & Tricks**: Share and discover fitness advice
+- **Community**: Connect with other users and groups
+- **Reminders**: Set up workout and challenge reminders
+
+## Deployment
+
+The application can be built for production using:
+
+```sh
+npm run build
+# or
+yarn build
+```
+
+The build output will be in the `dist` directory, which can be deployed to any static hosting service like Netlify, Vercel, or GitHub Pages.
+
+## Contributing
+
+Contributions to FitCommunity are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- Images from [Adobe Stock](https://stock.adobe.com/)
+- UI Components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
