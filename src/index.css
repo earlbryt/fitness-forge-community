@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 250 100% 99%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -35,7 +35,7 @@
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 100%;
+    --sidebar-background: 250 100% 99%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 262 83% 64%;
     --sidebar-primary-foreground: 0 0% 98%;
@@ -157,7 +157,7 @@
 }
 
 .action-btn-secondary {
-  @apply bg-yellow-500 hover:bg-yellow-500/90 text-white font-medium rounded-lg px-5 py-2.5 transition-colors;
+  @apply bg-brand-secondary hover:bg-brand-secondary/90 text-brand-dark font-medium rounded-lg px-5 py-2.5 transition-colors;
 }
 
 /* Adding fancy gradient backgrounds */
@@ -166,20 +166,5 @@
 }
 
 .bg-gradient-secondary {
-  @apply bg-gradient-to-br from-yellow-500 to-brand-warning;
+  @apply bg-gradient-to-br from-brand-secondary to-brand-warning;
 }
-
-/* Image container for 3D effect */
-.image-3d-container {
-  @apply relative;
-}
-
-.image-3d-container:before {
-  @apply content-[''] absolute -inset-4 rounded-2xl bg-gradient-to-r from-brand-primary/30 to-yellow-500/30 blur-xl;
-}
-
-/* Glass effect */
-.glass-card {
-  @apply backdrop-blur-lg bg-white/60 border border-white/20 shadow-lg rounded-2xl;
-}
-
