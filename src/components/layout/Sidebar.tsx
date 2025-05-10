@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Activity, List, Award, BarChart2, MessageSquare, HelpCircle, CheckCircle } from 'lucide-react';
+import { Activity, List, Award, BarChart2, MessageSquare, HelpCircle, CheckCircle, Database } from 'lucide-react';
 
 const Sidebar = () => {
   return (
@@ -18,6 +17,7 @@ const Sidebar = () => {
         <SidebarLink to="/app/leaderboard" icon={<BarChart2 />} label="Leaderboard" />
         <SidebarLink to="/app/tips" icon={<HelpCircle />} label="Tips & Tricks" />
         <SidebarLink to="/app/social" icon={<MessageSquare />} label="Community" />
+        <SidebarLink to="/app/supabase" icon={<Database />} label="Supabase" />
       </nav>
       
       <div className="p-4 m-4 mt-auto rounded-xl bg-brand-light border border-brand-primary/10">

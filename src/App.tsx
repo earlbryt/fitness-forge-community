@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +13,7 @@ import Social from "./pages/Social";
 import Reminders from "./pages/Reminders";
 import NotFound from "./pages/NotFound";
 import LandingPage from "./pages/LandingPage";
+import SupabaseTest from "./pages/SupabaseTest";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +33,7 @@ const App = () => (
             <Route path="tips" element={<TipsAndTricks />} />
             <Route path="social" element={<Social />} />
             <Route path="reminders" element={<Reminders />} />
+            <Route path="supabase" element={<SupabaseTest />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

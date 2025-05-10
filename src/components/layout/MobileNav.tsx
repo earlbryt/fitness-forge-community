@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Activity, CheckCircle, Award, BarChart2, MessageSquare } from 'lucide-react';
+import { Activity, CheckCircle, Award, BarChart2, MessageSquare, Database } from 'lucide-react';
 
 const MobileNav = () => {
   return (
@@ -11,6 +10,7 @@ const MobileNav = () => {
       <MobileNavItem to="/app/challenges" icon={<Award size={22} />} label="Challenges" />
       <MobileNavItem to="/app/social" icon={<MessageSquare size={22} />} label="Community" />
       <MobileNavItem to="/app/leaderboard" icon={<BarChart2 size={22} />} label="Leaderboard" />
+      <MobileNavItem to="/app/supabase" icon={<Database size={22} />} label="Supabase" />
     </div>
   );
 };
