@@ -63,9 +63,9 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Updated brand colors based on the reference image
+				// Updated brand colors based on the new reference images
 				brand: {
-					primary: '#9b87f5', // Purple from the reference
+					primary: '#8151ff', // Purple from the reference
 					secondary: '#7E69AB', // Secondary purple
 					accent: '#4F46E5', // Indigo
 					light: '#F5F3FF', // Light purple background

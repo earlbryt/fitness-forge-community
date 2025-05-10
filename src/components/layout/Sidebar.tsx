@@ -7,8 +7,9 @@ const Sidebar = () => {
   return (
     <div className="desktop-only bg-white border-r border-gray-100 w-64 flex flex-col h-screen fixed shadow-sm">
       <div className="p-6 border-b border-gray-100">
-        <h1 className="text-xl font-bold text-brand-dark flex items-center">
-          <span className="text-brand-primary">Fit</span>Community
+        <h1 className="text-xl font-bold text-gray-800 flex items-center">
+          <span className="text-brand-primary">Fit</span>
+          <span className="text-yellow-500">Community</span>
         </h1>
       </div>
       <nav className="flex-1 pt-6 px-3">
