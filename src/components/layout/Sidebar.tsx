@@ -12,12 +12,12 @@ const Sidebar = () => {
         </h1>
       </div>
       <nav className="flex-1 pt-6 px-3">
-        <SidebarLink to="/" icon={<Activity />} label="Dashboard" />
-        <SidebarLink to="/workouts" icon={<List />} label="Workouts" />
-        <SidebarLink to="/challenges" icon={<Award />} label="Challenges" />
-        <SidebarLink to="/leaderboard" icon={<BarChart2 />} label="Leaderboard" />
-        <SidebarLink to="/tips" icon={<HelpCircle />} label="Tips & Tricks" />
-        <SidebarLink to="/social" icon={<MessageSquare />} label="Social" />
+        <SidebarLink to="/app" icon={<Activity />} label="Dashboard" />
+        <SidebarLink to="/app/workouts" icon={<List />} label="Workouts" />
+        <SidebarLink to="/app/challenges" icon={<Award />} label="Challenges" />
+        <SidebarLink to="/app/leaderboard" icon={<BarChart2 />} label="Leaderboard" />
+        <SidebarLink to="/app/tips" icon={<HelpCircle />} label="Tips & Tricks" />
+        <SidebarLink to="/app/social" icon={<MessageSquare />} label="Social" />
       </nav>
       
       <div className="p-4 m-4 mt-auto rounded-xl bg-brand-light border border-brand-primary/10">

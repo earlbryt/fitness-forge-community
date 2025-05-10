@@ -13,6 +13,7 @@ import TipsAndTricks from "./pages/TipsAndTricks";
 import Social from "./pages/Social";
 import Reminders from "./pages/Reminders";
 import NotFound from "./pages/NotFound";
+import LandingPage from "./pages/LandingPage";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +24,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<AppLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/app" element={<AppLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="workouts" element={<Workouts />} />
             <Route path="challenges" element={<Challenges />} />
