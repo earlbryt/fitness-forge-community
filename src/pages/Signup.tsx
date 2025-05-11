@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +36,26 @@ const Signup = () => {
     return true;
   };
 
+  const validateUsername = () => {
+    if (!username.trim()) {
+      setAuthMessage('Username is required');
+      return false;
+    }
+    
+    if (username.length < 3) {
+      setAuthMessage('Username must be at least 3 characters');
+      return false;
+    }
+    
+    // Check for spaces and special characters
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      setAuthMessage('Username can only contain letters, numbers and underscores');
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -41,15 +63,15 @@ const Signup = () => {
     setPasswordError('');
     setAuthMessage('');
     
-    // Validate password
-    if (!validatePassword()) {
+    // Validate username and password
+    if (!validateUsername() || !validatePassword()) {
       return;
     }
     
     setIsLoading(true);
 
     try {
-      const { error, success, message } = await signUp(email, password);
+      const { error, success, message } = await signUp(email, password, username);
       
       if (error) {
         console.error('Signup error:', error);
@@ -115,6 +137,18 @@ const Signup = () => {
                   </AlertDescription>
                 </Alert>
               )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input 
+                  id="username" 
+                  type="text" 
+                  placeholder="yourUsername" 
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
             
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -181,4 +215,4 @@ const Signup = () => {
   );
 };
 
-export default Signup; 
+export default Signup;

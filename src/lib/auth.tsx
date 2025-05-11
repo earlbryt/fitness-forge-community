@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
@@ -7,7 +8,7 @@ type AuthContextType = {
   session: Session | null;
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{
+  signUp: (email: string, password: string, username?: string) => Promise<{
     error: any | null;
     success: boolean;
     message?: string;
@@ -50,13 +51,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Sign up with email and password
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, username?: string) => {
     try {
-      console.log('Starting signup process for:', email);
+      console.log('Starting signup process for:', email, 'with username:', username);
       
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            username: username || email.split('@')[0],
+          },
+        },
       });
 
       console.log('Signup response:', { data, error });
@@ -84,6 +90,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data?.session) {
         // User is automatically logged in
         console.log('User signed up and logged in successfully');
+        
+        // Create or update the profile with username
+        if (data.user) {
+          try {
+            const { error: profileError } = await supabase
+              .from('profiles')
+              .upsert({
+                id: data.user.id,
+                username: username || email.split('@')[0],
+                email: email
+              });
+            
+            if (profileError) {
+              console.error('Error creating profile:', profileError);
+            }
+          } catch (profileErr) {
+            console.error('Error during profile creation:', profileErr);
+          }
+        }
+        
         navigate('/app');
         return { error: null, success: true };
       } else {
@@ -155,4 +181,4 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-} 
+}
