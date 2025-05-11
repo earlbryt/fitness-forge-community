@@ -3,7 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Image, Smile, X } from 'lucide-react';
-import { WorkoutType } from '@/types/social';
+import { WorkoutType, NewPostData } from '@/types/social';
 import { createPost, uploadPostImage } from '@/services/social';
 import { toast } from 'sonner';
 import { User } from '@/types/social';
@@ -222,4 +222,4 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
       </div>
     </div>
   );
-} 
+}

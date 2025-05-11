@@ -20,12 +20,7 @@ export default function SupabaseDemo() {
       const { data, error } = await supabase
         .from('fake_table')
         .select('*')
-        .limit(1)
-        .then(result => result)
-        .catch(err => {
-          // Convert to the same format as a normal error
-          return { data: null, error: err };
-        });
+        .limit(1);
       
       // Even if the table doesn't exist, we can confirm connection was successful
       const connectionSuccessful = !error || error.message.includes('does not exist');
@@ -35,7 +30,7 @@ export default function SupabaseDemo() {
       }
       
       // Get Supabase project info from URL
-      const url = supabase.supabaseUrl;
+      const url = supabase.getUrl();
       const projectName = new URL(url).hostname.split('.')[0];
       
       setProjectInfo({
@@ -60,11 +55,6 @@ export default function SupabaseDemo() {
       // Try to create a simple demo table using SQL query
       const { error } = await supabase.rpc('create_demo_table', {
         table_name: 'demo_items'
-      })
-      .then(result => result)
-      .catch(err => {
-        // Convert to the same format as a normal error
-        return { data: null, error: err };
       });
       
       if (error) {
