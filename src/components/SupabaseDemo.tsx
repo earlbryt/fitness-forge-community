@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Button } from '@/components/ui/button';
@@ -16,9 +17,9 @@ export function SupabaseDemo() {
       setMessage('Checking connection to Supabase...');
       
       // A simple query to check if we're connected
-      const { data, error } = await supabase.from('fake_table').select('*').limit(1).catch(() => ({
-        data: null,
-        error: { message: 'Table does not exist, but connection successful' }
+      const { data, error } = await supabase.from('fake_table').select('*').limit(1).then(response => ({
+        data: response.data,
+        error: response.error || { message: 'Table does not exist, but connection successful' }
       }));
       
       if (error && !error.message.includes('does not exist')) {
@@ -26,11 +27,11 @@ export function SupabaseDemo() {
       }
       
       // Get Supabase project info
-      const projectUrl = supabase.supabaseUrl;
+      const projectUrl = new URL(supabase.supabaseUrl).hostname;
       
       setProjectInfo({
-        url: projectUrl,
-        project: projectUrl.split('https://')[1].split('.supabase')[0],
+        url: supabase.supabaseUrl,
+        project: projectUrl.split('.')[0],
       });
       
       setStatus('success');
@@ -50,8 +51,8 @@ export function SupabaseDemo() {
       // Try to create a simple demo table
       const { error } = await supabase.rpc('create_demo_table', {
         table_name: 'demo_items'
-      }).catch(() => ({
-        error: { message: 'RPC not available - please create table through Supabase dashboard' }
+      }).then(response => ({
+        error: response.error || { message: 'RPC not available - please create table through Supabase dashboard' }
       }));
       
       if (error) {
@@ -114,4 +115,4 @@ export function SupabaseDemo() {
       </CardFooter>
     </Card>
   );
-} 
+}

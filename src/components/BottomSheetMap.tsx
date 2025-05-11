@@ -274,7 +274,6 @@ const BottomSheetMap: React.FC<BottomSheetMapProps> = ({
                     strokeColor: '#3B82F6',
                     strokeOpacity: 0.8,
                     strokeWeight: 5,
-                    strokeCap: 'round',
                     strokeJoin: 'round',
                     geodesic: true,
                   }}
@@ -318,4 +317,4 @@ const BottomSheetMap: React.FC<BottomSheetMapProps> = ({
   );
 };
 
-export default BottomSheetMap; 
+export default BottomSheetMap;

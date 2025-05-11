@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
@@ -43,11 +44,11 @@ export function useSupabaseQuery<T>(
           query = query.limit(options.limit);
         }
         
-        const { data, error } = await query;
+        const { data: responseData, error: responseError } = await query;
         
-        if (error) throw error;
+        if (responseError) throw responseError;
         
-        setData(data);
+        setData(responseData as T[]);
       } catch (error) {
         setError(error as Error);
         console.error('Error fetching data:', error);
@@ -64,7 +65,7 @@ export function useSupabaseQuery<T>(
 
 // Hook for user authentication state
 export function useSupabaseAuth() {
-  const [user, setUser] = useState(supabase.auth.getUser());
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -90,4 +91,4 @@ export function useSupabaseAuth() {
   }, []);
 
   return { user, loading };
-} 
+}
