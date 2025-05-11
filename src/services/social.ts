@@ -523,45 +523,66 @@ export const addComment = async (commentData: NewCommentData): Promise<Comment |
 
 // Get comments for a post
 export const getPostComments = async (postId: string): Promise<Comment[]> => {
-  const { data, error } = await supabase
-    .from('post_comments')
-    .select(`
-      *,
-      profiles:user_id (*)
-    `)
-    .eq('post_id', postId)
-    .order('created_at', { ascending: true });
-  
-  if (error || !data) {
-    console.error('Error fetching comments:', error);
+  try {
+    // First get all comments for the post
+    const { data: commentsData, error: commentsError } = await supabase
+      .from('post_comments')
+      .select('*')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true });
+    
+    if (commentsError || !commentsData || commentsData.length === 0) {
+      console.error('Error fetching comments or no comments found:', commentsError);
+      return [];
+    }
+    
+    // Get all unique user IDs from the comments
+    const userIds = [...new Set(commentsData.map(comment => comment.user_id))];
+    
+    // Then get all relevant user profiles in a single query
+    const { data: profilesData, error: profilesError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', userIds);
+      
+    if (profilesError) {
+      console.error('Error fetching comment user profiles:', profilesError);
+    }
+    
+    // Create a map of user profiles for quick lookup
+    const profilesMap = new Map();
+    if (profilesData) {
+      profilesData.forEach(profile => {
+        profilesMap.set(profile.id, profile);
+      });
+    }
+    
+    // Format comments with user info
+    return commentsData.map(comment => {
+      const profileData = profilesMap.get(comment.user_id);
+      
+      // Create user object
+      const commentUser: User = {
+        id: comment.user_id,
+        email: profileData?.email,
+        avatar_url: profileData?.avatar_url,
+        username: profileData?.username || 'user',
+        verified: profileData?.verified || false,
+        fullName: profileData?.full_name || profileData?.username || 'Anonymous',
+        initials: profileData?.full_name
+          ? profileData.full_name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || 'AN'
+          : 'AN'
+      };
+      
+      return {
+        ...comment,
+        user: commentUser
+      };
+    });
+  } catch (error) {
+    console.error('Unexpected error in getPostComments:', error);
     return [];
   }
-  
-  // Format comments with user info
-  return data.map(comment => {
-    const profileData = comment.profiles as any;
-    
-    // Create user object
-    const commentUser: User = {
-      id: profileData.id,
-      first_name: profileData.first_name,
-      last_name: profileData.last_name,
-      avatar_url: profileData.avatar_url,
-      username: profileData.username || profileData.email?.split('@')[0],
-      verified: profileData.verified || false,
-      fullName: profileData.full_name || profileData.username || 'Anonymous',
-      initials: profileData.full_name
-        ? profileData.full_name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || 'AN'
-        : (profileData.email?.substring(0, 2) || 'AN').toUpperCase()
-    };
-    
-    delete comment.profiles;
-    
-    return {
-      ...comment,
-      user: commentUser
-    };
-  });
 };
 
 // Upload image for post
