@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 
 // Use environment variables if available, otherwise fallback to hardcoded values
