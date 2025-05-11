@@ -14,6 +14,9 @@ import Reminders from "./pages/Reminders";
 import NotFound from "./pages/NotFound";
 import LandingPage from "./pages/LandingPage";
 import SupabaseTest from "./pages/SupabaseTest";
+import Login from "./auth/login";
+import SignUp from "./auth/signup";
+
 
 const queryClient = new QueryClient();
 
@@ -23,20 +26,24 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/app" element={<AppLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="workouts" element={<Workouts />} />
-            <Route path="challenges" element={<Challenges />} />
-            <Route path="leaderboard" element={<Leaderboard />} />
-            <Route path="tips" element={<TipsAndTricks />} />
-            <Route path="social" element={<Social />} />
-            <Route path="reminders" element={<Reminders />} />
-            <Route path="supabase" element={<SupabaseTest />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <div className="site-wrapper">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/app" element={<AppLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="workouts" element={<Workouts />} />
+              <Route path="challenges" element={<Challenges />} />
+              <Route path="leaderboard" element={<Leaderboard />} />
+              <Route path="tips" element={<TipsAndTricks />} />
+              <Route path="social" element={<Social />} />
+              <Route path="reminders" element={<Reminders />} />
+              <Route path="supabase" element={<SupabaseTest />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

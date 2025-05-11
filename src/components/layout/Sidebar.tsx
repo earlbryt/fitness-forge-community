@@ -4,7 +4,7 @@ import { Activity, List, Award, BarChart2, MessageSquare, HelpCircle, CheckCircl
 
 const Sidebar = () => {
   return (
-    <div className="desktop-only bg-white border-r border-gray-100 w-64 flex flex-col h-screen fixed shadow-sm">
+    <div className="hidden lg:flex bg-white border-r border-gray-100 w-64 flex-col h-screen fixed shadow-sm">
       <div className="p-6 border-b border-gray-100">
         <h1 className="text-xl font-bold text-brand-dark flex items-center">
           <span className="text-brand-primary">Fit</span>Community

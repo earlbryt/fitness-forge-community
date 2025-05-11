@@ -4,7 +4,7 @@ import { Activity, CheckCircle, Award, BarChart2, MessageSquare, Database } from
 
 const MobileNav = () => {
   return (
-    <div className="mobile-only mobile-nav">
+    <div className="lg:hidden mobile-nav">
       <MobileNavItem to="/app" icon={<Activity size={22} />} label="Dashboard" />
       <MobileNavItem to="/app/workouts" icon={<CheckCircle size={22} />} label="Workouts" />
       <MobileNavItem to="/app/challenges" icon={<Award size={22} />} label="Challenges" />

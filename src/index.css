@@ -125,14 +125,28 @@
   @apply text-brand-primary;
 }
 
+.site-wrapper {
+  @apply max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8; /* Responsive padding */
+}
+
 .mobile-nav-icon {
   @apply w-6 h-6 mb-1;
+}
+body {
+  @apply bg-background text-foreground;
+  padding: 1rem; /* Add padding around the site */
 }
 
 /* Layout styling for desktop vs mobile */
 @media (min-width: 1024px) {
   .mobile-only {
     @apply hidden;
+  }
+}
+
+@media (max-width: 1024px) {
+  body {
+    padding: 0.5rem; /* Reduce padding for smaller screens */
   }
 }
 
