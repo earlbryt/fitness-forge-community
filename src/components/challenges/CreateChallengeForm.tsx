@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { createChallenge, searchUsers } from '@/services/social';
 import { toast } from 'sonner';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { User } from '@/types/social';
+import { User, NewChallengeData } from '@/types/social';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface CreateChallengeFormProps {
@@ -25,14 +24,14 @@ export function CreateChallengeForm({ onChallengeCreated, onCancel }: CreateChal
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [distance, setDistance] = useState('');
-  const [distanceUnit, setDistanceUnit] = useState('km');
+  const [distanceUnit, setDistanceUnit] = useState<'km' | 'mi'>('km');
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [challengeType, setChallengeType] = useState('distance');
+  const [challengeType, setChallengeType] = useState<'distance' | 'completion'>('distance');
   const [isSearching, setIsSearching] = useState(false);
   
   // Set default end date to 7 days from today
@@ -140,7 +139,11 @@ export function CreateChallengeForm({ onChallengeCreated, onCancel }: CreateChal
         
         <div className="space-y-2">
           <Label>Challenge Type</Label>
-          <Select value={challengeType} onValueChange={setChallengeType} disabled={isLoading}>
+          <Select 
+            value={challengeType} 
+            onValueChange={(value: 'distance' | 'completion') => setChallengeType(value)} 
+            disabled={isLoading}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
@@ -168,7 +171,11 @@ export function CreateChallengeForm({ onChallengeCreated, onCancel }: CreateChal
             </div>
             <div className="space-y-2 w-24">
               <Label htmlFor="distance-unit">Unit</Label>
-              <Select value={distanceUnit} onValueChange={setDistanceUnit} disabled={isLoading}>
+              <Select 
+                value={distanceUnit} 
+                onValueChange={(value: 'km' | 'mi') => setDistanceUnit(value)} 
+                disabled={isLoading}
+              >
                 <SelectTrigger id="distance-unit">
                   <SelectValue />
                 </SelectTrigger>
