@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -123,12 +124,15 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
     );
   }
 
+  // Get display name from user object
+  const displayName = currentUser.username || currentUser.fullName || 'Anonymous';
+
   return (
     <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-4">
       <div className="flex items-start gap-3 mb-3">
         <Avatar className="w-8 h-8 rounded-full overflow-hidden">
           {currentUser?.avatar_url ? (
-            <AvatarImage src={currentUser.avatar_url} alt={currentUser.fullName || 'User'} />
+            <AvatarImage src={currentUser.avatar_url} alt={displayName} />
           ) : (
             <AvatarFallback className="bg-brand-light text-brand-primary text-xs">
               {currentUser?.initials || 'U'}
@@ -136,7 +140,7 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
           )}
         </Avatar>
         <Textarea 
-          placeholder="Share your workout or fitness journey..." 
+          placeholder={`Share your workout or fitness journey, ${displayName}...`}
           className="flex-1 rounded-lg border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 min-h-[60px] text-sm resize-none"
           value={content}
           onChange={(e) => setContent(e.target.value)}

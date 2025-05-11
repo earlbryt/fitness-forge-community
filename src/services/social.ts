@@ -1,6 +1,5 @@
-
 import { supabase } from '@/lib/supabase';
-import { User, Post, Comment, NewPostData, NewCommentData } from '@/types/social';
+import { User, Post, Comment, NewPostData, NewCommentData, Challenge, NewChallengeData } from '@/types/social';
 
 // Get current user
 export const getCurrentUser = async (): Promise<User | null> => {
@@ -604,5 +603,220 @@ export const uploadPostImage = async (file: File): Promise<string | null> => {
   } catch (error) {
     console.error('Error in uploadPostImage:', error);
     return null;
+  }
+};
+
+// User search for challenges
+export const searchUsers = async (query: string): Promise<User[]> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    
+    // Search users by username, first name, or last name
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .or(`username.ilike.%${query}%,first_name.ilike.%${query}%,last_name.ilike.%${query}%`)
+      .neq('id', user.id)  // Don't include current user
+      .limit(10);
+      
+    if (error) {
+      console.error('Error searching users:', error);
+      return [];
+    }
+    
+    // Format user data
+    return (data || []).map(profile => ({
+      id: profile.id,
+      email: profile.email,
+      first_name: profile.first_name,
+      last_name: profile.last_name,
+      username: profile.username || profile.email?.split('@')[0],
+      avatar_url: profile.avatar_url,
+      verified: profile.verified || false,
+      fullName: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Anonymous',
+      initials: profile.first_name && profile.last_name 
+        ? `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
+        : (profile.email?.substring(0, 2) || 'AN').toUpperCase()
+    }));
+  } catch (error) {
+    console.error('Error searching users:', error);
+    return [];
+  }
+};
+
+// Create a new challenge
+export const createChallenge = async (challengeData: NewChallengeData): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    
+    const { error } = await supabase
+      .from('challenges')
+      .insert({
+        title: challengeData.title,
+        description: challengeData.description,
+        challenge_type: challengeData.challenge_type,
+        target_distance: challengeData.target_distance,
+        distance_unit: challengeData.distance_unit,
+        start_date: challengeData.start_date,
+        end_date: challengeData.end_date,
+        creator_id: user.id,
+        opponent_id: challengeData.opponent_id,
+        status: 'pending'
+      });
+      
+    if (error) {
+      console.error('Error creating challenge:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error creating challenge:', error);
+    return false;
+  }
+};
+
+// Get user's challenges
+export const getChallenges = async (): Promise<Challenge[]> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    
+    // Get all challenges where the user is either creator or opponent
+    const { data, error } = await supabase
+      .from('challenges')
+      .select(`
+        *,
+        creator:creator_id(id, username, first_name, last_name, avatar_url, verified),
+        opponent:opponent_id(id, username, first_name, last_name, avatar_url, verified)
+      `)
+      .or(`creator_id.eq.${user.id},opponent_id.eq.${user.id}`)
+      .order('created_at', { ascending: false });
+      
+    if (error) {
+      console.error('Error fetching challenges:', error);
+      return [];
+    }
+    
+    // Format challenge data with user info
+    return (data || []).map(challenge => {
+      // Format creator user object
+      const creator = challenge.creator as any;
+      const creatorUser: User = {
+        id: creator.id,
+        username: creator.username,
+        first_name: creator.first_name,
+        last_name: creator.last_name,
+        avatar_url: creator.avatar_url,
+        verified: creator.verified || false,
+        fullName: `${creator.first_name || ''} ${creator.last_name || ''}`.trim() || creator.username || 'Anonymous',
+        initials: creator.first_name && creator.last_name 
+          ? `${creator.first_name[0]}${creator.last_name[0]}`.toUpperCase()
+          : (creator.username?.[0] || 'C').toUpperCase()
+      };
+      
+      // Format opponent user object
+      const opponent = challenge.opponent as any;
+      const opponentUser: User = {
+        id: opponent.id,
+        username: opponent.username,
+        first_name: opponent.first_name,
+        last_name: opponent.last_name,
+        avatar_url: opponent.avatar_url,
+        verified: opponent.verified || false,
+        fullName: `${opponent.first_name || ''} ${opponent.last_name || ''}`.trim() || opponent.username || 'Anonymous',
+        initials: opponent.first_name && opponent.last_name 
+          ? `${opponent.first_name[0]}${opponent.last_name[0]}`.toUpperCase()
+          : (opponent.username?.[0] || 'O').toUpperCase()
+      };
+      
+      return {
+        ...challenge,
+        creator: creatorUser,
+        opponent: opponentUser
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching challenges:', error);
+    return [];
+  }
+};
+
+// Accept a challenge
+export const acceptChallenge = async (challengeId: string): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    
+    const { error } = await supabase
+      .from('challenges')
+      .update({ status: 'active' })
+      .eq('id', challengeId)
+      .eq('opponent_id', user.id)  // Only the opponent can accept
+      .eq('status', 'pending');     // Only pending challenges can be accepted
+      
+    if (error) {
+      console.error('Error accepting challenge:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error accepting challenge:', error);
+    return false;
+  }
+};
+
+// Decline a challenge
+export const declineChallenge = async (challengeId: string): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    
+    const { error } = await supabase
+      .from('challenges')
+      .update({ status: 'declined' })
+      .eq('id', challengeId)
+      .eq('opponent_id', user.id)  // Only the opponent can decline
+      .eq('status', 'pending');     // Only pending challenges can be declined
+      
+    if (error) {
+      console.error('Error declining challenge:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error declining challenge:', error);
+    return false;
+  }
+};
+
+// Complete a challenge and declare winner
+export const completeChallenge = async (challengeId: string, winnerId: string): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    
+    const { error } = await supabase
+      .from('challenges')
+      .update({ 
+        status: 'completed',
+        winner_id: winnerId 
+      })
+      .eq('id', challengeId)
+      .or(`creator_id.eq.${user.id},opponent_id.eq.${user.id}`);  // Either party can complete
+      
+    if (error) {
+      console.error('Error completing challenge:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error completing challenge:', error);
+    return false;
   }
 };

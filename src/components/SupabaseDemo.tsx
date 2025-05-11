@@ -30,7 +30,7 @@ export default function SupabaseDemo() {
       }
       
       // Get Supabase project info from URL
-      const url = supabase.getUrl();
+      const url = supabase.supabaseUrl;
       const projectName = new URL(url).hostname.split('.')[0];
       
       setProjectInfo({
@@ -59,6 +59,7 @@ export default function SupabaseDemo() {
       
       if (error) {
         // Fallback message if RPC fails
+        setStatus('error');
         setMessage('Please create tables through Supabase dashboard.');
         return;
       }
