@@ -30,7 +30,7 @@ export default function SupabaseDemo() {
       }
       
       // Get Supabase project info from URL
-      const url = new URL(supabase.supabaseUrl).toString();
+      const url = new URL(supabase.getUrl()).toString();
       const projectName = new URL(url).hostname.split('.')[0];
       
       setProjectInfo({

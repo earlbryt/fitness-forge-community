@@ -70,8 +70,8 @@ const Leaderboard = () => {
       const userRankData = formattedData.find(user => user.user_id === currentUserId);
       if (userRankData) {
         setUserRank(prev => ({ 
-          ...prev || {}, 
-          workouts: userRankData.rank || 0 
+          workouts: userRankData.rank || 0,
+          challenges: prev ? prev.challenges : 0
         }));
       }
       
@@ -125,8 +125,8 @@ const Leaderboard = () => {
       const userRankData = formattedData.find(user => user.user_id === currentUserId);
       if (userRankData) {
         setUserRank(prev => ({ 
-          ...prev || {}, 
-          challenges: userRankData.rank || 0 
+          challenges: userRankData.rank || 0,
+          workouts: prev ? prev.workouts : 0
         }));
       }
       
