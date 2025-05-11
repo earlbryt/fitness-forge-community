@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { MapPin, Locate } from 'lucide-react';
 import { GoogleMap, useJsApiLoader, Marker, Polyline } from '@react-google-maps/api';
@@ -108,10 +109,16 @@ const WorkoutMap: React.FC<WorkoutMapProps> = ({
   };
 
   // Create path for the polyline (for route visualization)
+  // Ensure each point is valid for Google Maps
   const path = locationPoints.map(point => ({
-    lat: point.latitude,
-    lng: point.longitude
-  }));
+    lat: Number(point.latitude),
+    lng: Number(point.longitude)
+  })).filter(point => 
+    !isNaN(point.lat) && 
+    !isNaN(point.lng) && 
+    point.lat !== null && 
+    point.lng !== null
+  );
 
   return (
     <div className="w-full h-64 rounded-md overflow-hidden border border-gray-200 relative">
@@ -129,7 +136,7 @@ const WorkoutMap: React.FC<WorkoutMapProps> = ({
         }}
       >
         {/* Draw the route if there are multiple points and it's a dynamic workout */}
-        {isDynamic && locationPoints.length > 1 && (
+        {isDynamic && path.length > 1 && (
           <Polyline
             path={path}
             options={{
@@ -182,4 +189,4 @@ const WorkoutMap: React.FC<WorkoutMapProps> = ({
   );
 };
 
-export default WorkoutMap; 
+export default WorkoutMap;

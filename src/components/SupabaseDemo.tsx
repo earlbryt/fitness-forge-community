@@ -2,116 +2,129 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle, AlertCircle, Database } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-export function SupabaseDemo() {
+export default function SupabaseDemo() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
-  const [projectInfo, setProjectInfo] = useState<any>(null);
-
-  const checkConnection = async () => {
+  const [message, setMessage] = useState<string>('');
+  const [projectInfo, setProjectInfo] = useState<{ url: string; project: string } | null>(null);
+  
+  const testConnection = async () => {
     try {
       setStatus('loading');
       setMessage('Checking connection to Supabase...');
       
       // A simple query to check if we're connected
-      const { data, error } = await supabase.from('fake_table').select('*').limit(1).then(response => ({
-        data: response.data,
-        error: response.error || { message: 'Table does not exist, but connection successful' }
-      }));
+      const { data, error } = await supabase
+        .from('fake_table')
+        .select('*')
+        .limit(1);
       
-      if (error && !error.message.includes('does not exist')) {
-        throw error;
+      // Even if the table doesn't exist, we can confirm connection was successful
+      const connectionSuccessful = !error || error.message.includes('does not exist');
+      
+      if (!connectionSuccessful) {
+        throw new Error(`Connection error: ${error.message}`);
       }
       
-      // Get Supabase project info
-      const projectUrl = new URL(supabase.supabaseUrl).hostname;
+      // Get Supabase project info from URL
+      const url = supabase.getUrl();
+      const projectName = new URL(url).hostname.split('.')[0];
       
       setProjectInfo({
-        url: supabase.supabaseUrl,
-        project: projectUrl.split('.')[0],
+        url: url,
+        project: projectName,
       });
       
       setStatus('success');
       setMessage('Successfully connected to Supabase!');
     } catch (error: any) {
-      console.error('Connection error:', error);
       setStatus('error');
-      setMessage(`Connection error: ${error.message || 'Unknown error'}`);
+      setMessage(`Connection error: ${error.message}`);
+      console.error('Supabase connection error:', error);
     }
   };
-
-  const createDemoTable = async () => {
+  
+  const createTable = async () => {
     try {
       setStatus('loading');
       setMessage('Creating demo table...');
       
-      // Try to create a simple demo table
+      // Try to create a simple demo table using SQL query
       const { error } = await supabase.rpc('create_demo_table', {
         table_name: 'demo_items'
-      }).then(response => ({
-        error: response.error || { message: 'RPC not available - please create table through Supabase dashboard' }
-      }));
+      });
       
       if (error) {
-        setMessage(`Note: ${error.message}. You can create tables through the Supabase dashboard.`);
-      } else {
-        setMessage('Demo table created successfully!');
+        // Fallback message if RPC fails
+        setMessage('Please create tables through Supabase dashboard.');
+        return;
       }
       
       setStatus('success');
+      setMessage('Demo table created successfully!');
     } catch (error: any) {
-      console.error('Error creating table:', error);
       setStatus('error');
-      setMessage(`Error: ${error.message || 'Unknown error'}`);
+      setMessage(`Error creating table: ${error.message}`);
     }
   };
-
+  
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Supabase Connection</CardTitle>
-        <CardDescription>
-          Test your connection to the Supabase project
-        </CardDescription>
+        <CardTitle className="flex items-center gap-2">
+          <Database className="h-6 w-6" />
+          Supabase Connection Test
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {projectInfo && (
-          <div className="space-y-2">
-            <Label>Connected to project:</Label>
-            <Input readOnly value={projectInfo.project} />
-            <Label>Project URL:</Label>
-            <Input readOnly value={projectInfo.url} />
+        {status === 'loading' && (
+          <div className="py-4 text-center">
+            <div className="animate-pulse text-blue-500">Loading...</div>
+            <p className="text-sm text-gray-500 mt-2">{message}</p>
           </div>
         )}
         
-        {status !== 'idle' && (
-          <div className={`p-3 rounded ${
-            status === 'loading' ? 'bg-yellow-100 text-yellow-800' : 
-            status === 'success' ? 'bg-green-100 text-green-800' : 
-            'bg-red-100 text-red-800'
-          }`}>
-            {message}
-          </div>
+        {status === 'success' && (
+          <Alert className="bg-green-50 border-green-200">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800">
+              {message}
+              {projectInfo && (
+                <div className="mt-2 text-sm">
+                  <div>Project: <span className="font-semibold">{projectInfo.project}</span></div>
+                  <div>URL: <span className="font-semibold">{projectInfo.url}</span></div>
+                </div>
+              )}
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {status === 'error' && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{message}</AlertDescription>
+          </Alert>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex gap-2">
         <Button 
-          onClick={checkConnection} 
+          onClick={testConnection} 
           disabled={status === 'loading'}
         >
-          {status === 'loading' ? 'Checking...' : 'Test Connection'}
+          Test Connection
         </Button>
-        
-        <Button 
-          onClick={createDemoTable} 
-          disabled={status === 'loading' || status !== 'success'}
-          variant="outline"
-        >
-          Create Demo Table
-        </Button>
+        {status === 'success' && (
+          <Button 
+            variant="outline" 
+            onClick={createTable}
+            disabled={status === 'loading'}
+          >
+            Create Demo Table
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
