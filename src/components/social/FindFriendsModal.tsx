@@ -100,14 +100,15 @@ export function FindFriendsModal({ isOpen, onClose, currentUser }: FindFriendsMo
         !pendingRequestIds.has(profile.id)
       ).map(profile => ({
         id: profile.id,
-        first_name: profile.first_name,
-        last_name: profile.last_name,
+        email: profile.email,
         avatar_url: profile.avatar_url,
         username: profile.username,
         verified: profile.verified || false,
-        fullName: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.username || 'Anonymous',
-        initials: profile.first_name && profile.last_name 
-          ? `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
+        // Use the full_name field from profiles instead of constructing from first/last name
+        fullName: profile.full_name || profile.username || 'Anonymous',
+        // Generate initials from the full name
+        initials: profile.full_name
+          ? profile.full_name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || 'AN'
           : (profile.username?.[0] || 'A').toUpperCase()
       }));
       
@@ -124,10 +125,7 @@ export function FindFriendsModal({ isOpen, onClose, currentUser }: FindFriendsMo
       // Get friend requests sent to current user
       const { data: requests, error } = await supabase
         .from('friend_requests')
-        .select(`
-          *,
-          from_user:from_user_id(id, first_name, last_name, avatar_url, username, verified)
-        `)
+        .select('*')
         .eq('to_user_id', currentUser?.id || '')
         .eq('status', 'pending');
       
@@ -135,25 +133,50 @@ export function FindFriendsModal({ isOpen, onClose, currentUser }: FindFriendsMo
         console.error('Error fetching friend requests:', error);
         return;
       }
+
+      if (!requests || requests.length === 0) {
+        setFriendRequests([]);
+        return;
+      }
       
+      // Get user profiles for the friend requests
+      const senderIds = requests.map(request => request.from_user_id);
+      
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('id', senderIds);
+        
+      if (profilesError) {
+        console.error('Error fetching sender profiles:', profilesError);
+        return;
+      }
+      
+      // Create a map for quick lookup
+      const profilesMap = new Map();
+      profiles?.forEach(profile => {
+        profilesMap.set(profile.id, profile);
+      });
+      
+      // Format requests with sender user info
       const formattedRequests = requests.map(request => {
-        const from = request.from_user as any;
+        const profile = profilesMap.get(request.from_user_id);
+        
         return {
           ...request,
-          from_user: {
-            id: from.id,
-            first_name: from.first_name,
-            last_name: from.last_name,
-            avatar_url: from.avatar_url,
-            username: from.username,
-            verified: from.verified || false,
-            fullName: `${from.first_name || ''} ${from.last_name || ''}`.trim() || from.username || 'Anonymous',
-            initials: from.first_name && from.last_name 
-              ? `${from.first_name[0]}${from.last_name[0]}`.toUpperCase()
-              : (from.username?.[0] || 'A').toUpperCase()
-          }
+          from_user: profile ? {
+            id: profile.id,
+            email: profile.email,
+            avatar_url: profile.avatar_url,
+            username: profile.username,
+            verified: profile.verified || false,
+            fullName: profile.full_name || profile.username || 'Anonymous',
+            initials: profile.full_name
+              ? profile.full_name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || 'AN'
+              : (profile.username?.[0] || 'A').toUpperCase()
+          } : null
         };
-      });
+      }).filter(request => request.from_user !== null);
       
       setFriendRequests(formattedRequests);
     } catch (error) {
@@ -163,7 +186,21 @@ export function FindFriendsModal({ isOpen, onClose, currentUser }: FindFriendsMo
 
   const handleSendFriendRequest = async (userId: string) => {
     try {
-      // Create a friend request
+      // First, create a follow relationship (sender follows recipient)
+      const { error: followError } = await supabase
+        .from('follows')
+        .insert({
+          follower_id: currentUser?.id,
+          followed_id: userId
+        });
+      
+      if (followError) {
+        console.error('Error creating follow relationship:', followError);
+        toast.error('Failed to send friend request');
+        return;
+      }
+      
+      // Then create a friend request
       const { error } = await supabase
         .from('friend_requests')
         .insert({
@@ -178,7 +215,7 @@ export function FindFriendsModal({ isOpen, onClose, currentUser }: FindFriendsMo
         return;
       }
       
-      toast.success('Friend request sent');
+      toast.success('Friend request sent - you are now following this user');
       
       // Update UI
       setUsers(users.filter(user => user.id !== userId));
@@ -190,6 +227,9 @@ export function FindFriendsModal({ isOpen, onClose, currentUser }: FindFriendsMo
 
   const handleAcceptFriendRequest = async (requestId: string, fromUserId: string) => {
     try {
+      // The sender is already following the recipient (current user)
+      // So we just need to update the request status and make the recipient follow the sender back
+      
       // First, update the request status
       const { error: updateError } = await supabase
         .from('friend_requests')
@@ -202,29 +242,22 @@ export function FindFriendsModal({ isOpen, onClose, currentUser }: FindFriendsMo
         return;
       }
       
-      // Then create mutual follow relationships
+      // Create follow relationship (current user follows the request sender)
       const { error: followError } = await supabase
         .from('follows')
-        .insert([
-          {
-            follower_id: currentUser?.id,
-            followed_id: fromUserId
-          },
-          {
-            follower_id: fromUserId,
-            followed_id: currentUser?.id
-          }
-        ]);
+        .insert({
+          follower_id: currentUser?.id,
+          followed_id: fromUserId
+        });
       
       if (followError) {
         console.error('Error creating follow relationship:', followError);
-        toast.error('Accepted request but failed to create relationship');
-        return;
+        toast.error('Friend request accepted but failed to follow the user');
+      } else {
+        toast.success('Friend request accepted - you are now friends!');
       }
       
-      toast.success('Friend request accepted');
-      
-      // Update UI
+      // Update UI regardless of follow success
       setFriendRequests(friendRequests.filter(request => request.id !== requestId));
     } catch (error) {
       console.error('Error accepting friend request:', error);
