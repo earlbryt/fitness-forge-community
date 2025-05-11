@@ -4,7 +4,6 @@ export interface Post {
   created_at: string;
   user_id: string;
   user?: User;
-  workout_type?: WorkoutType;
   image_url?: string;
   likes_count: number;
   comments_count: number;
@@ -32,11 +31,10 @@ export interface User {
   initials?: string;
 }
 
-export type WorkoutType = 'Running' | 'Strength Training' | 'Yoga' | 'Cycling' | 'Swimming' | 'Crossfit' | 'HIIT' | 'Other';
+// WorkoutType definition removed as it's no longer needed
 
 export interface NewPostData {
   content: string;
-  workout_type?: string;
   image_url?: string;
 }
 

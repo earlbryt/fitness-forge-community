@@ -2,9 +2,9 @@
 import React, { useState, useRef } from 'react';
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// Select component imports removed as workout type feature was removed
 import { Image, Smile, X } from 'lucide-react';
-import { WorkoutType, NewPostData } from '@/types/social';
+import { NewPostData } from '@/types/social';
 import { createPost, uploadPostImage } from '@/services/social';
 import { toast } from 'sonner';
 import { User } from '@/types/social';
@@ -17,7 +17,6 @@ interface CreatePostFormProps {
 
 export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormProps) {
   const [content, setContent] = useState('');
-  const [workoutType, setWorkoutType] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -78,15 +77,10 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
         }
       }
       
-      // Create post with optional workout type
+      // Create post
       const postData: NewPostData = {
         content: content.trim(),
       };
-      
-      // Only add workout_type if it's selected
-      if (workoutType) {
-        postData.workout_type = workoutType;
-      }
       
       // Only add image_url if we have one
       if (imageUrl) {
@@ -98,7 +92,6 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
       if (result) {
         toast.success('Post created successfully!');
         setContent('');
-        setWorkoutType(undefined);
         setImagePreview(null);
         setSelectedFile(null);
         if (fileInputRef.current) {
@@ -192,28 +185,7 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
             <Smile size={16} />
           </Button>
         </div>
-        <div className="flex items-center gap-2">
-          <Select 
-            value={workoutType} 
-            onValueChange={setWorkoutType}
-            disabled={isLoading}
-          >
-            <SelectTrigger className="w-[140px] h-8 rounded-lg border-gray-200 text-xs">
-              <SelectValue placeholder="Workout type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="Running">Running</SelectItem>
-                <SelectItem value="Strength Training">Strength Training</SelectItem>
-                <SelectItem value="Yoga">Yoga</SelectItem>
-                <SelectItem value="Cycling">Cycling</SelectItem>
-                <SelectItem value="Swimming">Swimming</SelectItem>
-                <SelectItem value="Crossfit">Crossfit</SelectItem>
-                <SelectItem value="HIIT">HIIT</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+        <div className="flex justify-end">
           <Button 
             className="rounded-lg h-8 px-3"
             size="sm"

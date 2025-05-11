@@ -96,8 +96,7 @@ export const createPost = async (postData: NewPostData): Promise<Post | null> =>
     .insert({
       user_id: user.id,
       content: postData.content,
-      image_url: postData.image_url,
-      workout_type: postData.workout_type
+      image_url: postData.image_url
     })
     .select('*')
     .single();
