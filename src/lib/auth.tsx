@@ -53,14 +53,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Sign up with email and password
   const signUp = async (email: string, password: string, username?: string) => {
     try {
-      console.log('Starting signup process for:', email, 'with username:', username);
+      console.log('Starting signup process for:', email, 'with full name:', username);
       
+      // First, sign up the user with Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             username: username || email.split('@')[0],
+            full_name: username || email.split('@')[0],
           },
         },
       });
@@ -89,21 +91,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Since email confirmation is disabled, proceed with session
       if (data?.session) {
         // User is automatically logged in
-        console.log('User signed up and logged in successfully');
+        console.log('User signed up and logged in successfully with ID:', data.user?.id);
         
-        // Create or update the profile with username
+        // Create or update the profile with full name and username
         if (data.user) {
           try {
-            const { error: profileError } = await supabase
+            // Explicitly create a new profile record with name data
+            const profilePayload = {
+              id: data.user.id,
+              username: username || email.split('@')[0],
+              full_name: username || email.split('@')[0],
+              email: email,
+              updated_at: new Date().toISOString()
+            };
+            
+            console.log('Creating profile with data:', profilePayload);
+            
+            const { data: profileResult, error: profileError } = await supabase
               .from('profiles')
-              .upsert({
-                id: data.user.id,
-                username: username || email.split('@')[0],
-                email: email
-              });
+              .upsert(profilePayload, { onConflict: 'id' })
+              .select();
             
             if (profileError) {
               console.error('Error creating profile:', profileError);
+            } else {
+              console.log('Profile created/updated successfully:', profileResult);
+            }
+            
+            // Double-check that the profile was created
+            const { data: checkData, error: checkError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', data.user.id)
+              .single();
+              
+            if (checkError) {
+              console.error('Error verifying profile:', checkError);
+            } else {
+              console.log('Profile verification:', checkData);
             }
           } catch (profileErr) {
             console.error('Error during profile creation:', profileErr);

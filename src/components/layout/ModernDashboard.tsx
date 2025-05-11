@@ -8,7 +8,7 @@ import useWorkoutAuth from '@/hooks/useWorkoutAuth';
 import { 
   LayoutDashboard, Search, Bell, Settings, 
   ChevronRight, Users, Calendar, TrendingUp, 
-  Trophy, MessageCircle, Heart
+  Trophy, MessageCircle, Heart, UserCircle
 } from 'lucide-react';
 
 interface ModernDashboardProps {
@@ -52,14 +52,9 @@ const ModernDashboard = ({ children }: ModernDashboardProps) => {
       icon: <MessageCircle size={20} />
     },
     {
-      title: 'Tips & Tricks',
-      path: '/app/tips',
-      icon: <Heart size={20} />
-    },
-    {
-      title: 'Reminders',
-      path: '/app/reminders',
-      icon: <Calendar size={20} />
+      title: 'My Profile',
+      path: '/app/profile',
+      icon: <UserCircle size={20} />
     }
   ];
 
@@ -112,15 +107,24 @@ const ModernDashboard = ({ children }: ModernDashboardProps) => {
           {/* User Profile */}
           <div className="border-t border-gray-200 dark:border-slate-700 p-4">
             <div className="flex items-center">
-              <Avatar className="h-10 w-10">
-                {user?.user_metadata?.avatar_url && (
-                  <AvatarImage src={user.user_metadata.avatar_url} />
-                )}
-                <AvatarFallback className="bg-brand-primary text-white">
-                  {user?.email?.substring(0, 2).toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="ml-3 flex-1 overflow-hidden">
+              <Button 
+                variant="ghost" 
+                className="p-0 h-auto" 
+                onClick={() => navigate('/app/profile')}
+              >
+                <Avatar className="h-10 w-10">
+                  {user?.user_metadata?.avatar_url && (
+                    <AvatarImage src={user.user_metadata.avatar_url} />
+                  )}
+                  <AvatarFallback className="bg-brand-primary text-white">
+                    {user?.email?.substring(0, 2).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+              <div 
+                className="ml-3 flex-1 overflow-hidden cursor-pointer" 
+                onClick={() => navigate('/app/profile')}
+              >
                 <p className="text-sm font-medium truncate">
                   {user?.user_metadata?.full_name || user?.email || 'User'}
                 </p>

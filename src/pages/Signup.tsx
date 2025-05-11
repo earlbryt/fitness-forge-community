@@ -38,18 +38,12 @@ const Signup = () => {
 
   const validateUsername = () => {
     if (!username.trim()) {
-      setAuthMessage('Username is required');
+      setAuthMessage('Full name is required');
       return false;
     }
     
-    if (username.length < 3) {
-      setAuthMessage('Username must be at least 3 characters');
-      return false;
-    }
-    
-    // Check for spaces and special characters
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      setAuthMessage('Username can only contain letters, numbers and underscores');
+    if (username.length < 2) {
+      setAuthMessage('Full name must be at least 2 characters');
       return false;
     }
     
@@ -139,11 +133,11 @@ const Signup = () => {
               )}
               
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">Full Name</Label>
                 <Input 
                   id="username" 
                   type="text" 
-                  placeholder="yourUsername" 
+                  placeholder="John Doe" 
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
