@@ -70,9 +70,9 @@ export const getCurrentUser = async (): Promise<User | null> => {
         avatar_url: data.avatar_url,
         username: data.username || user.email?.split('@')[0],
         verified: data.verified || false,
-        fullName: `${data.first_name || ''} ${data.last_name || ''}`.trim() || user.email?.split('@')[0] || 'Anonymous',
-        initials: data.first_name && data.last_name 
-          ? `${data.first_name[0]}${data.last_name[0]}`.toUpperCase()
+        fullName: data.full_name || user.email?.split('@')[0] || 'Anonymous',
+        initials: data.full_name
+          ? data.full_name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || 'AN'
           : (user.email?.substring(0, 2) || 'AN').toUpperCase()
       };
     } catch (profileError) {
@@ -177,11 +177,9 @@ export const getFeedPosts = async (): Promise<Post[]> => {
         avatar_url: profileData?.avatar_url,
         username: profileData?.username || 'user',
         verified: profileData?.verified || false,
-        fullName: profileData ? 
-          `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim() || 'Anonymous' : 
-          'Anonymous',
-        initials: profileData && profileData.first_name && profileData.last_name
-          ? `${profileData.first_name[0]}${profileData.last_name[0]}`.toUpperCase()
+        fullName: profileData?.full_name || profileData?.username || 'Anonymous',
+        initials: profileData?.full_name
+          ? profileData.full_name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || 'AN'
           : 'AN'
       };
       
@@ -294,11 +292,9 @@ export const getFollowingPosts = async (): Promise<Post[]> => {
         avatar_url: profileData?.avatar_url,
         username: profileData?.username || 'user',
         verified: profileData?.verified || false,
-        fullName: profileData ? 
-          `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim() || 'Anonymous' : 
-          'Anonymous',
-        initials: profileData && profileData.first_name && profileData.last_name
-          ? `${profileData.first_name[0]}${profileData.last_name[0]}`.toUpperCase()
+        fullName: profileData?.full_name || profileData?.username || 'Anonymous',
+        initials: profileData?.full_name
+          ? profileData.full_name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || 'AN'
           : 'AN'
       };
       
@@ -553,9 +549,9 @@ export const getPostComments = async (postId: string): Promise<Comment[]> => {
       avatar_url: profileData.avatar_url,
       username: profileData.username || profileData.email?.split('@')[0],
       verified: profileData.verified || false,
-      fullName: `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim() || 'Anonymous',
-      initials: profileData.first_name && profileData.last_name 
-        ? `${profileData.first_name[0]}${profileData.last_name[0]}`.toUpperCase()
+      fullName: profileData.full_name || profileData.username || 'Anonymous',
+      initials: profileData.full_name
+        ? profileData.full_name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || 'AN'
         : (profileData.email?.substring(0, 2) || 'AN').toUpperCase()
     };
     
