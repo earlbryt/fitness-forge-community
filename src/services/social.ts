@@ -1,3 +1,4 @@
+
 import { supabase } from '@/lib/supabase';
 import { User, Post, Comment, NewPostData, NewCommentData } from '@/types/social';
 
@@ -314,6 +315,162 @@ export const getFollowingPosts = async (): Promise<Post[]> => {
   }
 };
 
+// Get user's friends
+export const getUserFriends = async (userId: string): Promise<User[]> => {
+  try {
+    // Get all user's connections
+    const { data: connections, error } = await supabase
+      .from('follows')
+      .select('followed_id')
+      .eq('follower_id', userId);
+      
+    if (error) {
+      console.error('Error fetching friends:', error);
+      return [];
+    }
+    
+    if (!connections || connections.length === 0) {
+      return [];
+    }
+    
+    const friendIds = connections.map(conn => conn.followed_id);
+    
+    // Get user profiles for these connections
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', friendIds);
+      
+    if (profilesError) {
+      console.error('Error fetching friend profiles:', profilesError);
+      return [];
+    }
+    
+    // Format friend data
+    return (profiles || []).map(profile => ({
+      id: profile.id,
+      email: profile.email,
+      first_name: profile.first_name,
+      last_name: profile.last_name,
+      avatar_url: profile.avatar_url,
+      username: profile.username,
+      verified: profile.verified || false,
+      fullName: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.username || 'Anonymous',
+      initials: profile.first_name && profile.last_name 
+        ? `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
+        : (profile.username?.[0] || 'A').toUpperCase()
+    }));
+  } catch (error) {
+    console.error('Error fetching friends:', error);
+    return [];
+  }
+};
+
+// Get friend requests sent to a user
+export const getFriendRequests = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('friend_requests')
+      .select(`
+        *,
+        from_user:from_user_id(id, first_name, last_name, avatar_url, username, verified)
+      `)
+      .eq('to_user_id', userId)
+      .eq('status', 'pending');
+      
+    if (error) {
+      console.error('Error fetching friend requests:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching friend requests:', error);
+    return [];
+  }
+};
+
+// Send a friend request
+export const sendFriendRequest = async (toUserId: string): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) return false;
+    
+    const { error } = await supabase
+      .from('friend_requests')
+      .insert({
+        from_user_id: user.id,
+        to_user_id: toUserId,
+        status: 'pending'
+      });
+      
+    return !error;
+  } catch (error) {
+    console.error('Error sending friend request:', error);
+    return false;
+  }
+};
+
+// Accept a friend request
+export const acceptFriendRequest = async (requestId: string, fromUserId: string): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) return false;
+    
+    // First, update the request status
+    const { error: updateError } = await supabase
+      .from('friend_requests')
+      .update({ status: 'accepted' })
+      .eq('id', requestId);
+      
+    if (updateError) {
+      console.error('Error accepting friend request:', updateError);
+      return false;
+    }
+    
+    // Then create mutual follow relationships
+    const { error: followError } = await supabase
+      .from('follows')
+      .insert([
+        {
+          follower_id: user.id,
+          followed_id: fromUserId
+        },
+        {
+          follower_id: fromUserId,
+          followed_id: user.id
+        }
+      ]);
+      
+    if (followError) {
+      console.error('Error creating follow relationship:', followError);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error accepting friend request:', error);
+    return false;
+  }
+};
+
+// Reject a friend request
+export const rejectFriendRequest = async (requestId: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('friend_requests')
+      .update({ status: 'rejected' })
+      .eq('id', requestId);
+      
+    return !error;
+  } catch (error) {
+    console.error('Error rejecting friend request:', error);
+    return false;
+  }
+};
+
 // Like a post
 export const likePost = async (postId: string): Promise<boolean> => {
   const { data: { user } } = await supabase.auth.getUser();
@@ -448,4 +605,4 @@ export const uploadPostImage = async (file: File): Promise<string | null> => {
     console.error('Error in uploadPostImage:', error);
     return null;
   }
-}; 
+};

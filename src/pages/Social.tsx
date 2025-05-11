@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, PlusCircle, UserPlus, AlertTriangle } from 'lucide-react';
 import { CreatePostForm } from '@/components/social/CreatePostForm';
 import { SocialPost } from '@/components/social/SocialPost';
+import { FindFriendsModal } from '@/components/social/FindFriendsModal';
 import { User, Post } from '@/types/social';
 import { getCurrentUser, getFeedPosts, getFollowingPosts } from '@/services/social';
 import { toast } from 'sonner';
@@ -14,6 +16,7 @@ const Social = () => {
   const [feedPosts, setFeedPosts] = useState<Post[]>([]);
   const [followingPosts, setFollowingPosts] = useState<Post[]>([]);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
+  const [isFindFriendsModalOpen, setIsFindFriendsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -123,6 +126,7 @@ const Social = () => {
           <Button 
             className="sm:ml-2 gap-1 rounded-lg text-sm h-9 px-3"
             variant="outline"
+            onClick={() => setIsFindFriendsModalOpen(true)}
           >
             <UserPlus size={16} />
             Find Friends
@@ -189,6 +193,7 @@ const Social = () => {
                   variant="outline"
                   className="gap-1 h-9 px-3 text-sm"
                   size="sm"
+                  onClick={() => setIsFindFriendsModalOpen(true)}
                 >
                   <UserPlus size={16} />
                   Find People to Follow
@@ -207,6 +212,12 @@ const Social = () => {
             )}
           </TabsContent>
         </Tabs>
+        
+        <FindFriendsModal 
+          isOpen={isFindFriendsModalOpen} 
+          onClose={() => setIsFindFriendsModalOpen(false)}
+          currentUser={currentUser}
+        />
       </div>
     </div>
   );
