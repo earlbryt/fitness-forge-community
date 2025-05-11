@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import useWorkoutAuth from '@/hooks/useWorkoutAuth';
+import { getFriendRequestsCount } from '@/services/social';
 import { 
   LayoutDashboard, Search, Bell, Settings, 
   ChevronRight, Users, Calendar, TrendingUp, 
@@ -19,11 +20,29 @@ const ModernDashboard = ({ children }: ModernDashboardProps) => {
   const { user } = useWorkoutAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [friendRequestCount, setFriendRequestCount] = useState(0);
 
   // Helper to determine if a route is active
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
+  
+  // Fetch friend request count on initial load and periodically
+  useEffect(() => {
+    const fetchFriendRequestCount = async () => {
+      if (user) {
+        const count = await getFriendRequestsCount();
+        setFriendRequestCount(count);
+      }
+    };
+    
+    fetchFriendRequestCount();
+    
+    // Set up interval to check for new friend requests
+    const interval = setInterval(fetchFriendRequestCount, 60000); // every minute
+    
+    return () => clearInterval(interval);
+  }, [user]);
 
   const menuItems = [
     {
@@ -49,7 +68,8 @@ const ModernDashboard = ({ children }: ModernDashboardProps) => {
     {
       title: 'Social',
       path: '/app/social',
-      icon: <MessageCircle size={20} />
+      icon: <MessageCircle size={20} />,
+      badge: friendRequestCount > 0 ? friendRequestCount : null
     },
     {
       title: 'My Profile',
@@ -95,7 +115,14 @@ const ModernDashboard = ({ children }: ModernDashboardProps) => {
                     }`}
                     onClick={() => navigate(item.path)}
                   >
-                    {item.icon}
+                    <div className="relative">
+                      {item.icon}
+                      {item.badge && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-5 h-5 flex items-center justify-center font-medium px-1">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
                     <span>{item.title}</span>
                     {isActive(item.path) && <ChevronRight size={16} className="ml-auto" />}
                   </Button>

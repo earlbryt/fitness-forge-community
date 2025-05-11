@@ -1,15 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, PlusCircle, UserPlus, AlertTriangle } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreatePostForm } from '@/components/social/CreatePostForm';
 import { SocialPost } from '@/components/social/SocialPost';
 import { FindFriendsModal } from '@/components/social/FindFriendsModal';
 import { User, Post } from '@/types/social';
-import { getCurrentUser, getFeedPosts, getFollowingPosts } from '@/services/social';
+import { getCurrentUser, getFeedPosts, getFollowingPosts, getFriendRequestsCount } from '@/services/social';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { UserPlus, AlertTriangle, PlusCircle } from 'lucide-react';
 
 const Social = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -18,8 +18,8 @@ const Social = () => {
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [isFindFriendsModalOpen, setIsFindFriendsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [friendRequestCount, setFriendRequestCount] = useState(0);
 
   useEffect(() => {
     const fetchUserAndPosts = async () => {
@@ -42,6 +42,10 @@ const Social = () => {
         } catch (followError) {
           console.error('Error fetching following posts:', followError);
         }
+        
+        // Get friend request count
+        const requestCount = await getFriendRequestsCount();
+        setFriendRequestCount(requestCount);
       } catch (error: any) {
         console.error('Error fetching data:', error);
         setError('Failed to load social features. The database might not be set up correctly.');
@@ -52,6 +56,16 @@ const Social = () => {
     };
     
     fetchUserAndPosts();
+  }, []);
+  
+  // Refresh friend request count periodically
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const requestCount = await getFriendRequestsCount();
+      setFriendRequestCount(requestCount);
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
   }, []);
 
   const handleRefreshPosts = async () => {
@@ -69,6 +83,10 @@ const Social = () => {
       } catch (followError) {
         console.error('Error refreshing following posts:', followError);
       }
+      
+      // Refresh friend request count
+      const requestCount = await getFriendRequestsCount();
+      setFriendRequestCount(requestCount);
     } catch (error: any) {
       console.error('Error refreshing posts:', error);
       setError('Failed to refresh posts. There might be a database issue.');
@@ -76,20 +94,9 @@ const Social = () => {
     }
   };
 
-  // Filter posts based on search query
-  const filteredFeedPosts = feedPosts.filter(post => 
-    post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.user?.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.user?.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.workout_type?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  
-  const filteredFollowingPosts = followingPosts.filter(post => 
-    post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.user?.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.user?.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.workout_type?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Use all posts without filtering
+  const filteredFeedPosts = feedPosts;
+  const filteredFollowingPosts = followingPosts;
 
   return (
     <div>
@@ -105,43 +112,41 @@ const Social = () => {
           </Alert>
         )}
         
-        <div className="flex mb-4 flex-wrap gap-2 sm:flex-nowrap">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            <input 
-              type="text" 
-              placeholder="Search posts..." 
-              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary text-sm"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+        <div className="flex mb-4 flex-wrap gap-2 sm:flex-nowrap justify-end">
           <Button 
-            className="sm:ml-2 bg-brand-primary hover:bg-brand-primary/90 gap-1 rounded-lg text-sm h-9 px-3"
+            className="gap-1 rounded-lg text-sm h-9 px-3 bg-brand-primary hover:bg-brand-primary/90"
             onClick={() => setIsCreatingPost(true)}
           >
             <PlusCircle size={16} />
             Create Post
           </Button>
           <Button 
-            className="sm:ml-2 gap-1 rounded-lg text-sm h-9 px-3"
+            className="gap-1 rounded-lg text-sm h-9 px-3 relative"
             variant="outline"
             onClick={() => setIsFindFriendsModalOpen(true)}
           >
             <UserPlus size={16} />
             Find Friends
+            {friendRequestCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                {friendRequestCount}
+              </span>
+            )}
           </Button>
         </div>
         
-        {isCreatingPost && (
-          <CreatePostForm 
-            currentUser={currentUser} 
-            onPostCreated={() => {
-              setIsCreatingPost(false);
-              handleRefreshPosts();
-            }} 
-          />
-        )}
+        <Dialog open={isCreatingPost} onOpenChange={setIsCreatingPost}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogTitle className="text-lg font-semibold mb-2">Create a Post</DialogTitle>
+            <CreatePostForm 
+              currentUser={currentUser} 
+              onPostCreated={() => {
+                setIsCreatingPost(false);
+                handleRefreshPosts();
+              }} 
+            />
+          </DialogContent>
+        </Dialog>
         
         <Tabs defaultValue="feed" className="mb-8">
           <TabsList className="bg-gray-100 p-1 rounded-lg">
@@ -215,8 +220,12 @@ const Social = () => {
         
         <FindFriendsModal 
           isOpen={isFindFriendsModalOpen} 
-          onClose={() => setIsFindFriendsModalOpen(false)}
-          currentUser={currentUser}
+          onClose={() => {
+            setIsFindFriendsModalOpen(false);
+            // Refresh friend request count and posts after closing the modal
+            handleRefreshPosts();
+          }} 
+          currentUser={currentUser} 
         />
       </div>
     </div>

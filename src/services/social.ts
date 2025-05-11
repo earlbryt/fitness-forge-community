@@ -360,6 +360,31 @@ export const getUserFriends = async (userId: string): Promise<User[]> => {
   }
 };
 
+// Get friend requests count for a user
+export const getFriendRequestsCount = async (): Promise<number> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) return 0;
+    
+    const { data, error, count } = await supabase
+      .from('friend_requests')
+      .select('*', { count: 'exact' })
+      .eq('to_user_id', user.id)
+      .eq('status', 'pending');
+    
+    if (error) {
+      console.error('Error getting friend requests count:', error);
+      return 0;
+    }
+    
+    return count || 0;
+  } catch (error) {
+    console.error('Unexpected error in getFriendRequestsCount:', error);
+    return 0;
+  }
+};
+
 // Get friend requests sent to a user
 export const getFriendRequests = async (userId: string) => {
   try {
