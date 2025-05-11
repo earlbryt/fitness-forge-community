@@ -2,13 +2,15 @@
 import React, { useState, useRef } from 'react';
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-// Select component imports removed as workout type feature was removed
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Image, Smile, X } from 'lucide-react';
 import { NewPostData } from '@/types/social';
 import { createPost, uploadPostImage } from '@/services/social';
 import { toast } from 'sonner';
 import { User } from '@/types/social';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
 
 interface CreatePostFormProps {
   currentUser: User | null;
@@ -20,7 +22,9 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,6 +58,25 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const handleEmojiSelect = (emoji: any) => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newContent = content.substring(0, start) + emoji.native + content.substring(end);
+      setContent(newContent);
+      
+      // Focus back on textarea and place cursor after inserted emoji
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + emoji.native.length, start + emoji.native.length);
+      }, 10);
+    } else {
+      setContent(content + emoji.native);
+    }
+    setIsEmojiPickerOpen(false);
   };
 
   const handleSubmit = async () => {
@@ -133,6 +156,7 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
           )}
         </Avatar>
         <Textarea 
+          ref={textareaRef}
           placeholder={`Share your workout or fitness journey, ${displayName}...`}
           className="flex-1 rounded-lg border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 min-h-[60px] text-sm resize-none"
           value={content}
@@ -176,18 +200,32 @@ export function CreatePostForm({ currentUser, onPostCreated }: CreatePostFormPro
           >
             <Image size={16} />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-gray-500 hover:text-brand-primary rounded-lg h-8 w-8 p-0"
-            disabled={isLoading}
-          >
-            <Smile size={16} />
-          </Button>
+          <Popover open={isEmojiPickerOpen} onOpenChange={setIsEmojiPickerOpen}>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-gray-500 hover:text-brand-primary rounded-lg h-8 w-8 p-0"
+                disabled={isLoading}
+                onClick={() => setIsEmojiPickerOpen(true)}
+              >
+                <Smile size={16} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 border-none shadow-lg" align="start" side="top" sideOffset={5}>
+              <Picker
+                data={data}
+                onEmojiSelect={handleEmojiSelect}
+                theme="light"
+                set="native"
+                previewPosition="none"
+              />
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="flex justify-end">
           <Button 
-            className="rounded-lg h-8 px-3"
+            className="rounded-lg h-8 px-3 bg-brand-primary hover:bg-brand-primary/90 text-white font-medium"
             size="sm"
             onClick={handleSubmit}
             disabled={isLoading || !content.trim()}
