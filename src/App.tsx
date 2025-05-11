@@ -1,9 +1,10 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AppLayout from "./components/layout/AppLayout";
+import ModernAppLayout from "./components/layout/ModernAppLayout";
 import Dashboard from "./pages/Dashboard";
 import Workouts from "./pages/Workouts";
 import Challenges from "./pages/Challenges";
@@ -36,7 +37,7 @@ const App = () => (
             
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/app" element={<AppLayout />}>
+              <Route path="/app" element={<ModernAppLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="workouts" element={<Workouts />} />
                 <Route path="challenges" element={<Challenges />} />

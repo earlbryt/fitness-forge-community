@@ -29,8 +29,8 @@ export default function SupabaseDemo() {
         throw new Error(`Connection error: ${error.message}`);
       }
       
-      // Get Supabase project info from URL - using getURL() method instead of protected property
-      const url = supabase.getUrl();
+      // Get Supabase project info from URL
+      const url = new URL(supabase.supabaseUrl).toString();
       const projectName = new URL(url).hostname.split('.')[0];
       
       setProjectInfo({
